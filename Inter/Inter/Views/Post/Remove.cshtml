@@ -1,0 +1,22 @@
+﻿@model Post
+
+@{
+    ViewBag.Title = "Удаление";
+    Layout = "_Layout";
+}
+
+<h1 class="display-3">@ViewBag.Title</h1>
+
+<div>
+    <div>Вы действительно хотите удалить пост?</div>
+    <div>
+        @Model.Text
+    </div>
+    <form asp-action="Remove" method="post">
+        <input asp-for="BoardId" type="hidden" name="boardId" />
+        <input asp-for="ThreadId" type="hidden" name="threadId" />
+        <input asp-for="Id" type="hidden" name="id" />
+        <input type="submit" value="Удалить" />
+        <a asp-action="ViewList" asp-route-boardId="@Model.BoardId" asp-route-threadId="@Model.ThreadId">Отмена</a>
+    </form>
+</div>

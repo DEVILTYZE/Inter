@@ -1,0 +1,54 @@
+﻿@model IEnumerable<Board>
+
+@{
+    ViewBag.Title = "Главная страница";
+    Layout = "_Layout";
+
+    var pathHelper = new PathHelper(Url);
+}
+
+<div class="container">
+    <div class="row mb-2 justify-content-end">
+        <h1 class="display-3">INTER</h1>
+    </div>
+    @if (AccountHelper.GetAccessIndex(Context.User, ViewBag.AccessRoleAdmin) >= 0)
+    {
+        <div class="row mb-3 justify-content-end">
+            <a class="btn btn-inter-dark shadow" asp-action="Create">Создать</a>
+        </div>
+    }
+    <div class="row">
+        <div class="container">
+            @foreach (var board in Model)
+            {
+                if (AccountHelper.GetAccessIndex(Context.User, board.AccessRoleName) < 0 && 
+                    AccountHelper.GetAccessIndex(board.AccessRoleName, RoleName.Anon) <= 0)
+                    continue;
+
+                <div class="row shadow mb-4 py-2" style="background-color: var(--light-2-inter)">
+                    <div class="col-auto">
+                        <img src="@pathHelper.GetFilePath(board)" alt="Изображение доски" class="img-fluid py-3" />
+                    </div>
+                    <div class="col ml-2 pt-2">
+                        <div class="row justify-content-between">
+                            <div class="col-5 pl-0">
+                                <a class="link-dark-inter link-large-inter" asp-action="ViewList" asp-controller="Thread"
+                                   asp-route-boardId="@board.Id">@board.Name</a>
+                            </div>
+                            @if (AccountHelper.GetAccessIndex(Context.User, RoleName.Admin) >= 0)
+                            {
+                                <div class="col-auto pl-0">
+                                    <a class="btn btn-inter-light shadow" asp-action="Edit" 
+                                       asp-route-id="@board.Id">Редактировать</a>
+                                </div>
+                            }
+                        </div>
+                        <div class="row text-break">
+                            @board.Description
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

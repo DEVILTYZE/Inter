@@ -1,0 +1,124 @@
+﻿@{
+    var pathHelper = new PathHelper(Url);
+    var returnUrl = Context.Request.Path.Value + Context.Request.QueryString.Value;
+    
+    if (string.CompareOrdinal(returnUrl, ConstHelper.LoginPath) != 0 && !string.IsNullOrEmpty(ViewBag.ReturnUrl))
+        returnUrl = ViewBag.ReturnUrl;
+}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@ViewBag.Title – INTER</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="~/css/site.css"/>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand-md navbar-toggleable-sm navbar-dark nav-inter shadow">
+        <div class="container flex-wrap flex-md-nowrap">
+            <a class="navbar-brand" asp-controller="Board" asp-action="ViewList">
+                <img src="@Url.Content("~/files/")_system/images/navbar_icon.png" alt="" class="d-inline-block">
+            </a>
+            <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#bdNavbar"
+                    aria-controls="bdNavbar" aria-expanded="false" aria-label="Toggle navigation">...</button>
+            <div class="navbar-collapse collapse" id="bdNavbar">
+                <ul class="navbar-nav flex-row flex-wrap bd-navbar-nav pt-2 py-md-0">
+                    @if (AccountHelper.GetAccessIndex(Context.User, RoleName.Admin) >= 0)
+                    {
+                        <li class="nav-item col-6">
+                            <a class="nav-link" asp-controller="Audit" asp-action="ViewList">Аудит</a>
+                        </li>
+                    }
+                </ul>
+                <hr class="d-md-none text-white-50">
+                <ul class="navbar-nav flex-row flex-wrap ml-md-auto">
+                    @if (Context.User.Identity is null || !Context.User.Identity.IsAuthenticated)
+                    {
+                        <li class="nav-item col-12">
+                            <div class="dropdown">
+                                <button class="btn btn-inter-dark dropdown-toggle" role="button" id="dropdownLogin" 
+                                        data-toggle="dropdown" aria-expanded="false">
+                                    Вход/Регистрация
+                                </button>
+                                
+                                <div class="dropdown-menu shadow" style="background-color: var(--dark-3-inter); color: var(--light-0-inter)" 
+                                     aria-labelledby="dropdownLogin">
+                                    <form asp-action="Login" asp-controller="Account" method="post" enctype="multipart/form-data">
+                                        <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                        <div class="container">
+                                            <div class="row mb-2">
+                                                <div class="col-12">
+                                                    <label for="EmailOrName">Email или имя:</label>
+                                                </div>
+                                                <div class="col-12">
+                                                    <input class="textarea-inter shadow" id="EmailOrName" name="EmailOrName" type="text"/>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-12">
+                                                    <label for="Password">Пароль:</label>
+                                                </div>
+                                                <div class="col-12">
+                                                    <input class="textarea-inter shadow" id="Password" name="Password" type="password"/>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2 justify-content-center">
+                                                <input class="btn btn-inter-dark shadow" type="submit" value="Войти"/>
+                                            </div>
+                                            <div class="row mb-2 justify-content-center">или</div>
+                                            <div class="row mb-2 justify-content-center">
+                                                <a class="link-light-inter font-weight-bold" asp-controller="Account" asp-action="Register">
+                                                    Зарегистрироваться
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item col-12">
+                            <div class="dropdown">
+                                <button class="btn btn-inter-dark border-0 rounded-circle p-0" role="button" 
+                                        id="dropdownMenuLink" data-toggle="dropdown" aria-expanded="false">
+                                    @{
+                                        var avatarUrl = Context.User.Claims.First(claim =>
+                                            string.CompareOrdinal(claim.Type, "avatarUrl") == 0).Value;
+
+                                        <img src="@pathHelper.GetCompressedFilePath(avatarUrl)" alt="Аватар" 
+                                             class="d-inline-block rounded-circle">
+                                    }
+                                </button>
+                                <ul class="dropdown-menu" style="background-color: var(--light-0-inter)" aria-labelledby="dropdownMenuLink">
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Account"
+                                           asp-action="Edit">Редактировать</a></li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Account"
+                                           asp-action="Logout" asp-route-returnUrl="@returnUrl">Выход</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+<div class="container main-container-inter">
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
+</div>
+
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", false)
+</body>
+</html>

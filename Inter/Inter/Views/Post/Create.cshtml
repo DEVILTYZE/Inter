@@ -1,0 +1,30 @@
+﻿@model Post
+
+@{
+    ViewBag.Title = "Создание";
+    Layout = "_Layout";
+}
+
+<h1 class="display-3">@ViewBag.Title</h1>
+
+<div>
+    <form asp-action="Create" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input asp-for="BoardId" type="hidden" />
+        <input asp-for="ThreadId" type="hidden" />
+        <input name="posterId" type="hidden" value="@ViewBag.UserId"/>
+        <div>
+            <label asp-for="Text"></label>
+            <textarea asp-for="Text"></textarea>
+            <span asp-validation-for="Text"></span>
+        </div>
+        <div>
+            <label asp-for="FileNames"></label>
+            <input type="file" name="fileUpload" multiple />
+        </div>
+        <div>
+            <input type="submit" value="Отправить" />
+            <a asp-action="ViewList" asp-route-boardId="@ViewBag.BoardId" asp-route-threadId="@ViewBag.ThreadId">Отмена</a>
+        </div>
+    </form>
+</div>

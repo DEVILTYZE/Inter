@@ -1,0 +1,88 @@
+﻿@model List<AuditEntry>
+
+@{
+    ViewBag.Title = "Аудит";
+    ViewBag.Page ??= 0;
+    Layout = "_Layout";
+}
+
+<div class="container">
+    <div class="row mb-2">
+        <h1 class="display-3">@ViewBag.Title</h1>
+    </div>
+    <div class="row mb-3 justify-content-between">
+        <div class="col-6 pl-0">
+            <form asp-action="ViewList" method="post" enctype="multipart/form-data">
+                <input class="col-9" type="search" name="searchPattern"/>
+                <input class="btn btn-inter-dark shadow" type="submit" value="Поиск"/>
+            </form>
+        </div>
+        <div class="col-auto">
+            <a class="btn btn-inter-dark shadow" asp-action="ClearAudit">Очистить аудит</a>
+        </div>
+    </div>
+    <div class="row mb-3 pr-3 justify-content-end">
+        @if (ViewBag.Page == 0)
+        {
+            <a class="btn btn-inter-dark mr-1 disabled shadow" asp-action="ViewList" asp-route-page="0" role="button" 
+               aria-disabled="true">&lt;</a>
+        }
+        else
+        {
+            <a class="btn btn-inter-dark mr-1" asp-action="ViewList" asp-route-page="@((int)ViewBag.Page - 1)" 
+               role="button">&lt;</a>
+        }
+        <a class="btn btn-inter-dark mr-1 disabled shadow">@(ViewBag.Page + 1)</a>
+        @if (Model.Count < ((int)ViewBag.Page + 1) * 500)
+        {
+            <a class="btn btn-inter-dark disabled shadow" asp-action="ViewList" asp-route-page="0" role="button" 
+               aria-disabled="true">&gt;</a>
+        }
+        else
+        {
+            <a class="btn btn-inter-dark shadow" asp-action="ViewList" asp-route-page="@((int)ViewBag.Page + 1)" 
+               role="button">&gt;</a>
+        }
+    </div>
+    <div class="row">
+        <div class="col pl-0">
+            <div class="table-responsive-xl">
+                <table class="table table-xl table-dark table-striped table-hover align-middle">
+                    <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Время</th>
+                        <th scope="col">Пользователь</th>
+                        <th scope="col">Действие</th>
+                        <th scope="col">Объект</th>
+                        <th scope="col">Результат</th>
+                        <th scope="col">Подробнее</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @{
+                        const int maxCount = 500; // Исправил константу здесь, исправь и в ифе вверху.
+                        var count = (int)ViewBag.Page * maxCount;
+                        var length = maxCount > Model.Count - count ? Model.Count - count : maxCount;
+
+                        for (var i = count; i < count + length; ++i)
+                        {
+                            var index = i;
+                            <tr>
+                                <th scope="row">@(i + 1)</th>
+                                <td>@Model[i].Time</td>
+                                <td>@(Model[i].User is null ? "NOT_LOGINED" : Model[i].User.Name)</td>
+                                <td>@Model[i].Method</td>
+                                <td>@Model[i].Item</td>
+                                <td>@Model[i].Result</td>
+                                <td><a class="btn btn-inter-dark shadow" asp-action="Info" asp-route-id="@Model[index].Id" 
+                                       asp-route-page="@ViewBag.Page">+</a></td>
+                            </tr>
+                        }
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

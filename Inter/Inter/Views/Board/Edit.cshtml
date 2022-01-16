@@ -1,0 +1,42 @@
+﻿@model Board
+
+@{
+    ViewBag.Title = "Редактирование";
+    Layout = "_Layout";
+    
+    var pathHelper = new PathHelper(Url);
+}
+
+<h1 class="display-3">@ViewBag.Title</h1>
+
+<div>
+    <form asp-action="Edit" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input asp-for="Threads" type="hidden" />
+        <div>
+            <label asp-for="Name"></label>
+            <input asp-for="Name" />
+            <span asp-validation-for="Name"></span>
+        </div>
+        <div>
+            <label asp-for="Description"></label>
+            <textarea asp-for="Description"></textarea>
+            <span asp-validation-for="Description"></span>
+        </div>
+        <div>
+            <img src="@pathHelper.GetFilePath(Model)" alt="" />
+            <label asp-for="ImageUrl"></label>
+            <input type="file" name="imageUpload" />
+        </div>
+        <div>
+            <label asp-for="AccessRoleName"></label>
+            <select asp-for="AccessRoleName" asp-items="@ViewBag.Roles"></select>
+            <span asp-validation-for="AccessRoleName"></span>
+        </div>
+        <div>
+            <input type="submit" value="Сохранить" />
+            <a asp-action="ViewList">Отмена</a>
+            <a asp-action="Remove" asp-route-id="@Model.Id" method="get">Удалить</a>
+        </div>
+    </form>
+</div>

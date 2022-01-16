@@ -1,0 +1,69 @@
+﻿@model User
+
+@{
+    ViewBag.Title = "Редактирование аккаунта";
+    Layout = "_Layout";
+    
+    var pathHelper = new PathHelper(Url);
+}
+
+<div class="container">
+    <div class="row mb-2">
+        <h1 class="display-3">@ViewBag.Title</h1>
+    </div>
+    <div class="flex-row">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input name="roleId" value="@Model.Role.Id" type="hidden" />
+            <input asp-for="Password" type="hidden" />
+            <input asp-for="Id" type="hidden" />
+            <input asp-for="AvatarUrl" type="hidden" />
+            <div class="row justify-content-around">
+                <div class="col-auto">
+                    <div class="row mb-2">
+                        <div class="col-auto">
+                            <img src="@pathHelper.GetCompressedFilePath(Model, false)" alt="Аватар" class="img-fluid"/>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <a class="btn btn-inter-dark" asp-action="RemoveAvatar">Удалить аватар</a>
+                    </div>
+                    <div class="row">
+                        @HtmlPageHelper.GetDragAndDropField(false, true)
+                    </div>
+                </div>
+                <div class="col mt-2 mb-3">
+                    <div class="row" style="min-width: 500px">
+                        <label class="col-2 pr-1 pt-2 text-right" asp-for="Name"></label>
+                        <p class="mb-0 pt-2">:</p>
+                        <input class="col-6 shadow ml-2" asp-for="Name" />
+                        <span class="col-6" asp-validation-for="Name"></span>
+                    </div>
+                    <div class="row" style="min-width: 500px">
+                        <label class="col-2 pr-1 pt-2 text-right" asp-for="Email"></label>
+                        <p class="mb-0 pt-2">:</p>
+                        <input class="col-6 shadow ml-2" asp-for="Email" />
+                        <span class="col-6" asp-validation-for="Email"></span>
+                    </div>
+                    <div class="row" style="min-width: 500px">
+                        <label class="col-2 pr-1 pt-2 text-right" asp-for="IsEmailHidden"></label>
+                        <p class="mb-0 pt-2">:</p>
+                        <div class="col-6 form-check form-check-inline pl-2 ml-2">
+                            <input class="form-check-input shadow mr-2" asp-for="IsEmailHidden" type="checkbox" id="isEmailHidden" />
+                            <label class="form-check-label" for="isEmailHidden"> (email не будет отображаться в Info)</label>
+                        </div>
+                        <span class="col-6" asp-validation-for="IsEmailHidden"></span>
+                    </div>
+                    <div class="row mt-1" style="min-width: 500px">
+                        <div class="col-2 mr-1"></div>
+                        <a class="btn btn-inter-dark shadow ml-3" asp-action="ChangePassword">Сменить пароль</a>
+                    </div>
+                    <div class="row mt-1">
+                        <div class="col-2 mr-1"></div>
+                        <input class="btn btn-inter-dark shadow ml-3" id="btnSubmit" type="submit" value="Сохранить"/>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

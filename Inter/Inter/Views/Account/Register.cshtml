@@ -1,0 +1,75 @@
+﻿@model Register
+
+@{
+    ViewBag.Title = "Регистрация";
+    Layout = "_Layout";
+}
+
+<div class="container">
+    <div class="row mb-2">
+        <h1 class="display-3">@ViewBag.Title</h1>
+    </div>
+    <div class="flex-row">
+        <form asp-action="Register" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="col mb-3">
+                <div class="row">
+                    <div class="col-4">
+                        <label class="textarea-inter text-right" asp-for="Email"></label>
+                    </div>
+                    <div class="col-4">
+                        <input class="textarea-inter shadow" asp-for="Email"/>
+                    </div>
+                    <div class="col-4">
+                        <span asp-validation-for="Email"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col mb-3">
+                <div class="row">
+                    <div class="col-4">
+                        <label class="textarea-inter text-right" asp-for="Name"></label>
+                    </div>
+                    <div class="col-4">
+                        <input class="textarea-inter shadow" asp-for="Name"/>
+                    </div>
+                    <div class="col-4">
+                        <span asp-validation-for="Name"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col mb-3">
+                <div class="row">
+                    <div class="col-4">
+                        <label class="textarea-inter text-right" asp-for="Password"></label>
+                    </div>
+                    <div class="col-4">
+                        <input class="textarea-inter shadow" asp-for="Password"/>
+                    </div>
+                    <div class="col-4">
+                        <span asp-validation-for="Password"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col mb-3">
+                <div class="row">
+                    <div class="col-4">
+                        <label class="textarea-inter text-right" asp-for="ConfirmPassword"></label>
+                    </div>
+                    <div class="col-4">
+                        <input class="textarea-inter shadow" asp-for="ConfirmPassword"/>
+                    </div>
+                    <div class="col-4">
+                        <span asp-validation-for="ConfirmPassword"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col mb-3">
+                <div class="row justify-content-center">
+                    <input class="btn btn-inter-dark shadow mr-3" type="submit" value="Зарегистрироваться"/>
+                    <a class="btn btn-inter-dark shadow ml-3" asp-action="ViewList" asp-controller="Board">Отмена</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

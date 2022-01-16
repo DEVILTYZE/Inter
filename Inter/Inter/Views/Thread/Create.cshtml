@@ -1,0 +1,47 @@
+﻿@model ThreadPost
+
+@{
+    ViewBag.Title = "Создание";
+    Layout = "_Layout";
+}
+
+<h1 class="display-3">@ViewBag.Title</h1>
+
+<div>
+    <form asp-action="Create" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input asp-for="BoardId" type="hidden" />
+        <div>
+            <label asp-for="Name"></label>
+            <input asp-for="Name" />
+            <span asp-validation-for="Name"></span>
+        </div>
+        <div>
+            <label asp-for="Text"></label>
+            <textarea asp-for="Text"></textarea>
+            <span asp-validation-for="Text"></span>
+        </div>
+        <div>
+            <label asp-for="FileUrls"></label>
+            <input type="file" name="fileUpload" multiple />
+        </div>
+        <div>
+            <label asp-for="IsPinned"></label>
+            <input asp-for="IsPinned" type="checkbox" unchecked />
+        </div>
+        <div>
+            <label asp-for="ReadRoleName"></label>
+            <select asp-for="ReadRoleName" asp-items="@ViewBag.Roles"></select>
+            <span asp-validation-for="ReadRoleName"></span>
+        </div>
+        <div>
+            <label asp-for="WriteRoleName"></label>
+            <select asp-for="WriteRoleName" asp-items="@ViewBag.Roles"></select>
+            <span asp-validation-for="WriteRoleName"></span>
+        </div>
+        <div>
+            <input type="submit" value="Создать" />
+            <a asp-action="ViewList" asp-route-boardId="@ViewBag.BoardId">Отмена</a>
+        </div>
+    </form>
+</div>

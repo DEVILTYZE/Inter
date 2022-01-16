@@ -1,0 +1,218 @@
+﻿@model IEnumerable<Thread>
+
+@{
+    ViewBag.Title = ViewBag.BoardName;
+    Layout = "_Layout";
+
+    var isAuthorized = Context.User.Identity is not null && Context.User.Identity.IsAuthenticated;
+    var accessGranted = AccountHelper.GetAccessIndex(User, RoleName.Moderator) >= 0;
+    var returnUrl = Context.Request.Path.Value + Context.Request.QueryString.Value;
+    var pathHelper = new PathHelper(Url);
+}
+
+<div class="container">
+    <div class="row mb-2 justify-content-end">
+        <h1 class="display-3">@ViewBag.Title</h1>
+    </div>
+    <div class="row">
+        @foreach (var thread in Model)
+        {
+            if (AccountHelper.GetAccessIndex(User, thread.ReadRoleName) < 0 && 
+                AccountHelper.GetAccessIndex(thread.ReadRoleName, RoleName.Anon) <= 0)
+                continue;
+
+            <div class="container mb-2" style="border-bottom: 1px solid var(--black-inter)">
+                <div class="row justify-content-between mt-2 mb-1">
+                    <div class="col">
+                        <h1 class="display-6">@thread.Name</h1>
+                    </div>
+                    <div class="col-auto">
+                        <a class="btn btn-inter-dark" asp-action="ViewList" asp-controller="Post"
+                           asp-route-boardId="@thread.BoardId" asp-route-threadId="@thread.Id">
+                            Открыть тред
+                        </a>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    @{
+                        const int length = 5;
+                        var posts = thread.Posts.Take(length).ToList();
+                        var count = 1;
+                        var className = string.Empty;
+
+                        foreach (var post in posts)
+                        {
+                            <div class="container @className mb-2">
+                                <div class="row">
+                                    <div class="col-auto">
+                                        @count
+                                    </div>
+                                    <div class="col-auto">
+                                        <a asp-action="Info" asp-controller="Account" asp-route-id="@post.Poster.Id">
+                                            <img src="@pathHelper.GetCompressedFilePath(post.Poster)" alt="Аватар" 
+                                                 class="d-inline-block rounded-circle" />
+                                        </a>
+                                    </div>
+                                    <div class="col-auto">
+                                        <a class="link-light-inter" asp-action="Info" asp-controller="Account" 
+                                           asp-route-id="@post.Poster.Id">
+                                            @post.Poster.Name
+                                        </a>
+                                    </div>
+                                    <div class="col-auto">@post.CreationTime</div>
+                                </div>
+                                @switch (post.FileNames.Count)
+                                {
+                                    case > 1:
+                                    {
+                                        <div class="row">
+                                            @foreach (var fileName in post.FileNames)
+                                            {
+                                                var compressedPath = pathHelper.GetCompressedFilePath(thread, fileName);
+                                                var path = pathHelper.GetFilePath(thread, fileName);
+                                                
+                                                <div class="col-3" name="media">
+                                                    <img src="@compressedPath" alt="@fileName" class="img-fluid"/>
+                                                    <input type="hidden" value="@path" />
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                @post.Text
+                                            </div>
+                                        </div>
+
+                                        break;
+                                    }
+                                    case 1:
+                                    {
+                                        var compressedPath = pathHelper.GetCompressedFilePath(thread, post.FileNames[0]);
+                                        var path = pathHelper.GetFilePath(thread, post.FileNames[0]);
+
+                                        <div class="row">
+                                            <div class="col-auto" name="media">
+                                                <img src="@compressedPath" alt="@post.FileNames[0]" class="img-fluid"/>
+                                                <input type="hidden" value="@path" />
+                                            </div>
+                                            <div class="col">
+                                                @post.Text
+                                            </div>
+                                        </div>
+
+                                        break;
+                                    }
+                                    default:
+                                    {
+                                        <div class="row">
+                                            <div class="col-12">
+                                                @post.Text
+                                            </div>
+                                        </div>
+
+                                        break;
+                                    }
+                                }
+                            </div>
+                            
+                            className = "post-viewer";
+                            ++count;
+                        }
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div id="owp-main-panel" class="container fixed-bottom align-self-center owp-translate" style="transition: 0.6s;">
+    <div class="row justify-content-center">
+        <div id="owp-btn" class="col-auto out-window-panel text-center shadow owp-btn">
+            Создать тред
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col out-window-panel shadow owp-form" style="max-height: var(--max-height-inter)">
+            @*CONTENT*@
+            @if (isAuthorized)
+            {
+                <form asp-action="Create" method="post" enctype="multipart/form-data">
+                    <input type="hidden" value="@ViewBag.BoardId" name="BoardId"/>
+                    <div class="container">
+                        <div class="row mt-2 mb-2">
+                            <div class="col">
+                                <input class="textarea-inter shadow" name="Name" placeholder="Название треда..."/>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div id="post-text" class="col-8">
+                                <textarea class="textarea-inter shadow" rows="10" type="text" name="Text" style="resize: none" 
+                                    placeholder="Текст шапки треда..."></textarea>
+                            </div>
+                            <div id="post-media" class="col-4">
+                                @HtmlPageHelper.GetDragAndDropField(true, false)
+                            </div>
+                        </div>
+                        @if (accessGranted)
+                        {
+                            <div class="row justify-content-center">
+                                <div class="col-auto">
+                                    <label>Читать могут:</label>
+                                    <select name="ReadRoleName" asp-items="@ViewBag.Roles"></select>
+                                </div>
+                                <div class="col-auto">
+                                    <label>Отвечать могут:</label>
+                                    <select name="WriteRoleName" asp-items="@ViewBag.Roles"></select>
+                                </div>
+                                <div class="col-auto form-check form-check-inline pl-3 pb-2">
+                                    <input class="form-check-input shadow mr-2" name="IsPinned" type="checkbox" id="isPinned"/>
+                                    <label class="form-check-label" for="isPinned">(закрепить тред вверху)</label>
+                                </div>
+                            </div>
+                        }
+                        <div class="row mb-2 justify-content-center">
+                            <input class="btn btn-inter-light shadow" id="btnSubmit" type="submit" value="Создать тред" />
+                        </div>
+                    </div>
+                </form>   
+            }
+            else
+            {
+                <form asp-action="login" asp-controller="Account" enctype="multipart/form-data">
+                    <input type="hidden" name="returnUrl" value="@returnUrl" />
+                    <div class="container">
+                        <div name="login-input" class="row mt-4 mb-2">
+                            <div class="col-3">
+                                <label class="textarea-inter text-right" for="EmailOrNameBottom">Email или имя:</label>
+                            </div>
+                            <div class="col-6">
+                                <input class="textarea-inter shadow" style="height: auto" id="EmailOrNameBottom" 
+                                       name="EmailOrName" type="text" />
+                            </div>
+                        </div>
+                        <div name="login-input" class="row mb-2">
+                            <div class="col-3">
+                                <label class="textarea-inter text-right" for="PasswordBottom">Пароль:</label>
+                            </div>
+                            <div class="col-6">
+                                <input class="textarea-inter shadow" id="PasswordBottom" name="Password" type="password" />
+                            </div>
+                        </div>
+                        <div class="row mb-2 justify-content-center">
+                            <input class="btn btn-inter-light shadow" type="submit" value="Войти" />
+                        </div>
+                        <div class="row mb-2 justify-content-center">или</div>
+                        <div class="row mb-2 justify-content-center">
+                            <a class="link-dark-inter font-weight-bold" asp-controller="Account" asp-action="Register">
+                                Зарегистрироваться
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            }
+            @*END OF CONTENT*@
+        </div>
+    </div>
+</div>
+<script lang="js" src="../js/editor.js"></script>
+<script lang="js" src="../js/mediaViewer.js"></script>
