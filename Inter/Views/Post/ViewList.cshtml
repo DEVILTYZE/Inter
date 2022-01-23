@@ -1,0 +1,24 @@
+﻿@model IEnumerable<Post>
+
+@{
+    ViewBag.Title = ViewBag.ThreadName;
+    Layout = "_Layout";
+}
+
+<h1 class="display-3">@ViewBag.Title</h1>
+<div><a asp-action="Create" asp-route-boardId="@ViewBag.BoardId" asp-route-threadId="@ViewBag.ThreadId">Создать</a></div>
+<div>
+    @foreach (var post in Model)
+    {
+        <div>
+            @post.Text
+        </div>
+        if (string.CompareOrdinal(post.Id, "0") != 0)
+        {
+            <div>
+                <a asp-action="Remove" asp-route-boardId="@ViewBag.BoardId" asp-route-threadId="@ViewBag.ThreadId"
+                   asp-route-id="@post.Id" method="get">Удалить</a>
+            </div>
+        }
+    }
+</div>

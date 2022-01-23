@@ -1,0 +1,61 @@
+﻿@model IEnumerable<Board>
+
+@{
+    ViewBag.Title = "Главная страница";
+    Layout = "_Layout";
+
+    var pathHelper = new PathHelper(Url);
+}
+
+<div class="container-md">
+    <div class="row mb-2 justify-content-end">
+        <div class="col-auto">
+            <h1 class="display-3">INTER</h1>
+        </div>
+    </div>
+    @if (AccountHelper.GetAccessIndex(Context.User, RoleName.Admin) >= 0)
+    {
+        <div class="row mb-3 justify-content-end">
+            <div class="col-auto">
+                <a class="btn btn-inter-dark shadow" asp-action="Create">Создать</a>
+            </div>
+        </div>
+    }
+    <div class="row ps-2 pe-2">
+        <div class="container-xl rounded mb-4" style="background-color: var(--light-2-inter)">
+            @foreach (var board in Model)
+            {
+                if (AccountHelper.GetAccessIndex(Context.User, board.AccessRoleName) < 0 && 
+                    AccountHelper.GetAccessIndex(board.AccessRoleName, RoleName.Anon) <= 0)
+                    continue;
+
+                <div class="row shadow py-2">
+                    <div class="col-xl-auto py-3">
+                        <img src="@pathHelper.GetFilePath(board)" alt="Изображение доски" class="img-fluid" />
+                    </div>
+                    <div class="col-md pt-2">
+                        <div class="row">
+                            <div class="col-md-9 col-sm-auto">
+                                <a class="link-dark-inter link-large-inter font-weight-bold" asp-action="ViewList" 
+                                   asp-controller="Thread" asp-route-boardId="@board.Id">@board.Name</a>
+                            </div>
+                            @if (AccountHelper.GetAccessIndex(Context.User, RoleName.Admin) >= 0)
+                            {
+                                <div class="col-md-auto">
+                                    <a class="btn btn-inter-light shadow" asp-action="Edit" asp-route-id="@board.Id">
+                                        Редактировать
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                        <div class="row">
+                            <div class="col-md text-break">
+                                @board.Description
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,50 @@
+﻿@model Login
+
+@{
+    ViewBag.Title = "Вход";
+    Layout = "_Layout";
+}
+
+<div class="container">
+    <div class="row mb-2">
+        <h1 class="display-3">@ViewBag.Title</h1>
+    </div>
+    <div class="flex-row">
+        <form asp-action="Login" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl"/>
+            <div class="col mb-3">
+                <div class="row">
+                    <div class="col-4">
+                        <label class="textarea-inter text-right" asp-for="EmailOrName"></label>
+                    </div>
+                    <div class="col-4">
+                        <input class="textarea-inter shadow" asp-for="EmailOrName"/>
+                    </div>
+                    <div class="col-4">
+                        <span asp-validation-for="EmailOrName"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col mb-3">
+                <div class="row">
+                    <div class="col-4">
+                        <label class="textarea-inter text-right" asp-for="Password"></label>
+                    </div>
+                    <div class="col-4">
+                        <input class="textarea-inter shadow" asp-for="Password"/>
+                    </div>
+                    <div class="col-4">
+                        <span asp-validation-for="Password"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col mb-3">
+                <div class="row justify-content-center">
+                    <input class="btn btn-inter-dark shadow me-3" type="submit" value="Войти"/>
+                    <a class="btn btn-inter-dark shadow ms-3" asp-action="ViewList" asp-controller="Board">Отмена</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

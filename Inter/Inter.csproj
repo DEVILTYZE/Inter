@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <DockerDefaultTargetOS>Windows</DockerDefaultTargetOS>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MongoDB.Driver" Version="2.13.1" />
+      <PackageReference Include="MongoDB.Driver.GridFS" Version="2.13.1" />
+      <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="Web.config">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="wwwroot\files\accnt\user_616ad5398b74149b9136bb5c\EvilArthas2.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\files\accnt\user_61bd105ad32868f95b95531e\EvilArthas2.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\files\accnt\user_61c24abcea392f2cb3e57ebb\2021122204516843.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\files\accnt\user_61c24abcea392f2cb3e57ebb\202112220455653.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\files\accnt\user_61c24abcea392f2cb3e57ebb\2021122204627726.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\files\imgbrd\board_2\_main\EvilArthas2.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\files\imgbrd\board_616dae55435a18e5901078b1\thread_0\post_0\comp_img\EvilArthas.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\files\imgbrd\board_616dae55435a18e5901078b1\thread_0\post_0\EvilArthas.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\files\imgbrd\board_616dae55435a18e5901078b1\_main\EvilArthas.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="wwwroot\files\accnt" />
+      <Folder Include="wwwroot\files\imgbrd" />
+    </ItemGroup>
+
+</Project>

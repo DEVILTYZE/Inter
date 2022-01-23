@@ -1,0 +1,17 @@
+﻿@model Board
+
+@{
+    ViewBag.Title = "Удаление";
+    Layout = "_Layout";
+}
+
+<h1 class="display-3">@ViewBag.Title</h1>
+
+<div>
+    <div>Вы действительно хотите удалить доску "@Model.Name"?</div>
+    <form asp-action="Remove" method="post">
+        <input asp-for="Id" type="hidden" name="id" />
+        <input type="submit" value="Удалить" />
+        <a asp-action="Edit" asp-route-id="@Model.Id">Отмена</a>
+    </form>
+</div>

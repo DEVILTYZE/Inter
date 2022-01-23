@@ -1,0 +1,65 @@
+﻿@model User
+
+@{
+    ViewBag.Title = "Информация об аккаунте";
+    Layout = "_Layout";
+    
+    var pathHelper = new PathHelper(Url);
+}
+
+<div class="container">
+    <div class="row mb-2">
+        <h1 class="display-3">@ViewBag.Title</h1>
+    </div>
+    <div class="row justify-content-around">
+        <div class="col-auto">
+            <img src="@pathHelper.GetCompressedFilePath(Model, false)" alt="Аватар" class="img-fluid" />
+        </div>
+        <div class="col-6">
+            <h4 class="row">Имя: @Model.Name</h4>
+            @if (Model.IsEmailHidden)
+            {
+                <h4 class="row">Email: скрыт</h4>
+            }
+            else
+            {
+                <h4 class="row">Email: @Model.Email</h4>
+            }
+            <h4 class="row">Роль: @Model.Role.Name</h4>
+        </div>
+        <div class="col-2">
+            @if (AccountHelper.GetAccessIndex(User, RoleName.Moderator) >= 0 && AccountHelper.GetAccessIndex(User, Model.Role.Name) > 0)
+            {
+                <button class="btn btn-inter-dark shadow" type="button" data-toggle="modal" data-target="#banWindow">
+                    Забанить
+                </button>
+
+                <div class="modal fade" id="banWindow" tabindex="-1"
+                     aria-labelledby="banLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content" style="background-color: var(--dark-2-inter)">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="banLabel">Забанить @Model.Name?</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <form asp-action="Ban" method="get" enctype="multipart/form-data">
+                                <div class="modal-body">
+                                    <p>Забанить до</p>
+                                    <input type="hidden" name="userId" value="@Model.Id"/>
+                                    <input type="date" name="date"/>
+                                </div>
+                                <div class="modal-footer">
+                                    <input type="submit" class="btn btn-inter-light shadow" value="Подтвердить">
+                                    <a class="btn btn-inter-light shadow" asp-action="Ban" asp-route-userId="@Model.Id">Навсегда</a>
+                                    <button type="button" class="btn btn-inter-dark shadow" data-dismiss="modal">Закрыть</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,37 @@
+﻿@model AuditEntry
+
+@{
+    ViewBag.Title = "Запись №" + Model.Id;
+    Layout = "_Layout";
+}
+
+<div class="container">
+    <div class="row mb-3">
+        <h1 class="display-3">@ViewBag.Title</h1>
+    </div>
+    <div class="row">
+        <h2>@Model.Time</h2>
+    </div>
+    <div class="row">
+        <div class="col-auto">
+            <a asp-controller="Account" asp-action="Info" asp-route-id="@Model.User.Id">Пользователь: @Model.User.Name</a>
+        </div>
+        <div class="col">
+            @Model.IpAddress
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-auto">
+            @Model.Method
+        </div>
+        <div class="col-auto">
+            @Model.Item
+        </div>
+        <div class="col-auto">
+            @Model.Result
+        </div>
+    </div>
+    <div class="row">
+        @Model.Info
+    </div>
+</div>

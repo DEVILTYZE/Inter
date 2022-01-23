@@ -1,0 +1,29 @@
+﻿@model IEnumerable<User>
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<h1 class="display-3">@ViewBag.Title</h1>
+
+<div>
+    @foreach (var user in Model)
+    {
+        <div>
+            <img src="@Url.Content("~/files/")@user.AvatarUrl" alt="@Url.Content("~/files/")_system/images/no_img.png" />
+        </div>
+        <div>
+            @user.Id
+        </div>
+        <div>
+            @user.Email
+        </div>
+        <div>
+            @user.Name
+        </div>
+        <div>
+            @user.Password
+        </div>
+    }
+</div>
