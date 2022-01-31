@@ -36,6 +36,7 @@
           "MongoDB.Driver": "2.13.1",
           "MongoDB.Driver.GridFS": "2.13.1",
           "System.Drawing.Common": "5.0.2",
+          "jquery.TypeScript.DefinitelyTyped": "3.1.2",
           "Microsoft.AspNetCore.Antiforgery": "5.0.0.0",
           "Microsoft.AspNetCore.Authentication.Abstractions": "5.0.0.0",
           "Microsoft.AspNetCore.Authentication.Cookies": "5.0.0.0",
@@ -338,6 +339,7 @@
           "lib/netstandard2.1/DnsClient.dll": {}
         }
       },
+      "jquery.TypeScript.DefinitelyTyped/3.1.2": {},
       "Microsoft.NETCore.Platforms/5.0.0": {},
       "Microsoft.Win32.SystemEvents/5.0.0": {
         "dependencies": {
@@ -2215,6 +2217,13 @@
       "sha512": "sha512-CO1NG1zQdV0nEAXmr/KppLZ0S1qkaPwV0kPX5YPgmYBtrBVh1XMYHM54IXy3RBJu1k4thFtpzwo4HNHqxiuFYw==",
       "path": "dnsclient/1.4.0",
       "hashPath": "dnsclient.1.4.0.nupkg.sha512"
+    },
+    "jquery.TypeScript.DefinitelyTyped/3.1.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-km6S6ElHdLPBxNf1qj5vQjkw1rpRe5Hwf/1aFo5TZtl3ZSfc//lcdsVTfPZz78o+/dkhEC+ZJcRONNlVDAJg6A==",
+      "path": "jquery.typescript.definitelytyped/3.1.2",
+      "hashPath": "jquery.typescript.definitelytyped.3.1.2.nupkg.sha512"
     },
     "Microsoft.NETCore.Platforms/5.0.0": {
       "type": "package",

@@ -45,6 +45,15 @@ namespace Inter.Helpers
             return -1;
         }
 
+        public static bool IsMainController(string path)
+        {
+            var controller = GetController(path);
+
+            return string.CompareOrdinal(controller, "Board") == 0 ||
+                   string.CompareOrdinal(controller, "Thread") == 0 ||
+                   string.CompareOrdinal(controller, "Post") == 0;
+        }
+
         public static string GetIpAddress(HttpContext context) 
             => context.Connection.RemoteIpAddress is null ? "0.0.0.0" : context.Connection.RemoteIpAddress.ToString();
 
@@ -73,6 +82,17 @@ namespace Inter.Helpers
 
             return emailEnd + emailName;
         }
-        
+
+        private static string GetController(string path)
+        {
+            if (path.Length == 1 && string.CompareOrdinal(path, "/") == 0)
+                return "Board";
+
+            var splitPath = path.Split('/');
+            path = splitPath[1];
+            var indexOfBreakPoint = path.IndexOf('?');
+
+            return indexOfBreakPoint != -1 ? path[..indexOfBreakPoint] : path;
+        }
     }
 }

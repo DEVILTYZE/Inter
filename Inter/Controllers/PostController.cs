@@ -93,7 +93,7 @@ namespace Inter.Controllers
             var poster = await _db.Users.Find(_userBuilder.Eq("_id", new ObjectId(posterId))).FirstOrDefaultAsync();
 
             if (poster is null)
-                return RedirectToAction("Page404", "Audit");
+                return RedirectToAction("Page404", "Forum");
 
             post.Id = thread.Posts.Count > 0 ? (int.Parse(thread.Posts.Last().Id) + 1).ToString() : "0";
             post.FileNames = new List<string>();

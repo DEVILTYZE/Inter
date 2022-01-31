@@ -13,21 +13,21 @@ namespace Inter.Helpers
 
         public string GetFilePath(Thread thread, string fileName) 
             => FileHelper.IsImage(fileName)
-                ? _url.Content("~/files/") + thread.FileFolderUrl + "/" + fileName
-                : _url.Content("~/files/") + ConstHelper.DefaultFilePicUrl;
+                ? _url.Content($"~/files/{thread.FileFolderUrl}/{fileName}")
+                : _url.Content($"~/files/{ConstHelper.DefaultFilePicUrl}");
 
         public string GetFilePath(User user)
-            => _url.Content("~/files/") + user.AvatarUrl;
+            => _url.Content($"~/files/{user.AvatarUrl}");
         
         public string GetFilePath(Board board)
             => string.IsNullOrEmpty(board.ImageUrl) 
-                ? _url.Content("~/files/") + ConstHelper.DefaultNormalImageUrl 
-                : _url.Content("~/files/") + board.ImageUrl;
+                ? _url.Content($"~/files/{ConstHelper.DefaultNormalImageUrl}") 
+                : _url.Content($"~/files/{board.ImageUrl}");
         
         public string GetCompressedFilePath(Thread thread, string fileName)
             => FileHelper.IsImage(fileName)
-                ? _url.Content("~/files/") + thread.FileFolderUrl + "/" + ConstHelper.CompressedImageFolderName + "/" + fileName
-                : _url.Content("~/files/") + ConstHelper.DefaultFilePicUrl;
+                ? _url.Content($"~/files/{thread.FileFolderUrl}/{ConstHelper.CompressedImageFolderName}/{fileName}")
+                : _url.Content($"~/files/{ConstHelper.DefaultFilePicUrl}");
 
         public string GetCompressedFilePath(User user, bool isSmall = true) 
             => GetCompressedFilePath(user.AvatarUrl, isSmall);
@@ -38,8 +38,8 @@ namespace Inter.Helpers
             var defaultPath = isSmall ? ConstHelper.DefaultSmallImageUrl : ConstHelper.DefaultNormalImageUrl;
 
             return string.IsNullOrEmpty(path) 
-                ? _url.Content("~/files/") + defaultPath
-                : _url.Content("~/files/") + path[..path.LastIndexOf('/')] + _avatarSizes[indexOfSize];
+                ? _url.Content($"~/files/{defaultPath}")
+                : _url.Content($"~/files/{path[..path.LastIndexOf('/')]}{_avatarSizes[indexOfSize]}");
         }
     }
 }

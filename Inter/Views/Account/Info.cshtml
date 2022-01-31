@@ -30,30 +30,34 @@
         <div class="col-2">
             @if (AccountHelper.GetAccessIndex(User, RoleName.Moderator) >= 0 && AccountHelper.GetAccessIndex(User, Model.Role.Name) > 0)
             {
-                <button class="btn btn-inter-dark shadow" type="button" data-toggle="modal" data-target="#banWindow">
+                <button class="btn shadow" type="button" data-bs-toggle="modal" data-bs-target="#banWindow">
                     Забанить
                 </button>
 
-                <div class="modal fade" id="banWindow" tabindex="-1"
-                     aria-labelledby="banLabel" aria-hidden="true">
+                <div class="modal fade" id="banWindow" tabindex="-1" aria-labelledby="banLabel" aria-hidden="true">
                     <div class="modal-dialog">
-                        <div class="modal-content" style="background-color: var(--dark-2-inter)">
+                        <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="banLabel">Забанить @Model.Name?</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                                 </button>
                             </div>
                             <form asp-action="Ban" method="get" enctype="multipart/form-data">
+                            <input type="hidden" name="userId" value="@Model.Id"/>
                                 <div class="modal-body">
-                                    <p>Забанить до</p>
-                                    <input type="hidden" name="userId" value="@Model.Id"/>
-                                    <input type="date" name="date"/>
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col-auto">Забанить до</div>
+                                            <div class="col-auto">
+                                                <input type="date" name="date"/>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <input type="submit" class="btn btn-inter-light shadow" value="Подтвердить">
-                                    <a class="btn btn-inter-light shadow" asp-action="Ban" asp-route-userId="@Model.Id">Навсегда</a>
-                                    <button type="button" class="btn btn-inter-dark shadow" data-dismiss="modal">Закрыть</button>
+                                    <input type="submit" class="btn shadow" value="Подтвердить">
+                                    <a class="btn shadow" asp-action="Ban" asp-route-userId="@Model.Id">Навсегда</a>
+                                    <button type="button" class="btn shadow" data-bs-dismiss="modal">Закрыть</button>
                                 </div>
                             </form>
                         </div>

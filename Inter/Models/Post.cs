@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Inter.Models
 {
@@ -20,6 +21,8 @@ namespace Inter.Models
         public List<string> FileNames { get; set; }
         
         [Display(Name = "Время создания")]
+        [BsonElement]
+        [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
         public DateTime CreationTime { get; set; }
         
         [HiddenInput]

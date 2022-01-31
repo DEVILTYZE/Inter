@@ -189,7 +189,9 @@ namespace Inter.Helpers
             return imageExtensions.Any(imageExtension 
                 => string.CompareOrdinal(extension[1..].ToUpper(), imageExtension) == 0);
         }
-        
+
+        public static bool IsNormalFileSize(long fileSize) => ConstHelper.MaxFileSize >= fileSize;
+
         private static Bitmap CompressImage(Image image, double neededMaxHeight)
         {
             var compressionRatio = image.Height / neededMaxHeight;

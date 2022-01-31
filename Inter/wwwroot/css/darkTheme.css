@@ -1,0 +1,115 @@
+﻿/*DARK THEME*/
+
+body {
+    background-color: var(--dark-20-inter);
+    color: var(--light-0-inter);
+}
+
+a {
+    color: var(--light-3-inter);
+}
+
+.theme-button img {
+    background-color: var(--light-30-inter);
+}
+
+.theme-button img:hover {
+    background-color: var(--light-20-inter);
+}
+
+.link-inter:hover, .nav-link:hover {
+    color: var(--light-0-inter);
+}
+
+.nav-link {
+    color: var(--light-7-inter);
+}
+
+.navbar {
+    background-color: var(--dark-10-inter);
+    color: var(--light-0-inter);
+}
+
+.sidebar {
+    background-color: var(--light-30-inter);
+}
+
+.btn {
+    background-color: var(--light-30-inter);
+    color: var(--light-1-inter);
+}
+
+.btn:hover {
+    color: var(--light-0-inter);
+}
+
+.form-control, .form-floating .form-control {
+    background-color: var(--light-20-inter);
+    color: var(--light-0-inter);
+    border-color: var(--light-20-inter);
+}
+
+.dropdown-menu {
+    background-color: var(--light-30-inter);
+}
+
+.dropdown-menu .dropdown-item {
+    color: var(--light-0-inter);
+}
+
+.dropdown-menu .dropdown-item:hover {
+    background-color: var(--light-20-inter);
+}
+
+.page-item .page-link {
+    background-color: var(--dark-30-inter);
+    color: var(--light-10-inter);
+    border-color: var(--light-30-inter);
+}
+
+.page-item .page-link:hover {
+    background-color: var(--light-10-inter);
+    color: var(--dark-30-inter);
+    border-color: var(--light-7-inter);
+}
+
+.page-item.disabled .page-link {
+    background-color: var(--light-30-inter);
+    color: var(--light-0-inter);
+    border-color: var(--light-20-inter);
+}
+
+.owp-btn, .owp-form {
+    background-color: var(--light-40-inter);
+}
+
+.owp-btn:hover {
+    background-color: var(--light-20-inter);
+}
+
+/*.navbar.inter-dark .nav-link, .navbar.inter-dark .navbar-toggler {*/
+/*    color: var(--light-10-inter);*/
+/*}*/
+
+.drag-and-drop-field {
+    background-color: var(--light-20-inter);
+    color: var(--light-0-inter);
+}
+
+.drag-and-drop-highlight {
+    background-color: var(--light-10-inter);
+    color: var(--dark-0-inter);
+}
+
+.board-dark {
+    background-color: var(--light-20-inter);
+}
+
+.table {
+    background-color: var(--dark-30-inter);
+    color: var(--light-1-inter);
+    --bs-table-striped-color: var(--light-3-inter);
+    --bs-table-hover-color: var(--light-0-inter);
+    --bs-table-striped-bg: rgba(0, 0, 0, 0.15);
+    --bs-table-hover-bg: rgba(0, 0, 0, 0.2);
+}

@@ -1,6 +1,6 @@
 ﻿
-const dragAndDropLight = 'drag-and-drop-field-highlight';
-const maxFileSize = 5242880;
+const dragAndDropLight = 'drag-and-drop-highlight';
+const maxFileSize = 10485760;
 
 let dropArea = document.getElementById('drop-area');
 let input = document.getElementById('drag-and-drop-input');
@@ -22,9 +22,9 @@ function setButtonEvent() {
         buttonClicked = true;
     }
 }
- 
+
 function unloadFiles() {
-    let fileString = document.getElementsByName('filePathInput')[0].value;
+    let fileString = document.getElementsByName('filePathInput')[0].getAttribute('value');
 
     if (fileString === '' || fileString === null || buttonClicked)
         return;
@@ -49,7 +49,7 @@ function fuckBlinks(e) {
     let coords = getCoords(dropArea);
     let dx = e.pageX - coords.left;
     let dy = e.pageY - coords.top;
-    
+
     if ((dx < 0) || (dx > dropArea.offsetWidth) || (dy < 0) || (dy > dropArea.offsetHeight)) {
         dropArea.classList.remove(dragAndDropLight);
     }
@@ -58,26 +58,30 @@ function fuckBlinks(e) {
 function handleDrop(e) {
     let dt = e.dataTransfer;
     let files = dt.files;
-    
+
     changeClass(dropArea, dragAndDropLight, '');
     sendFiles(files);
 }
 
 function handleInput() {
     let files = this.files;
-    
+
     sendFiles(files);
 }
 
 function sendFiles(files) {
     let formData = new FormData();
+    let fileArray = [];
+    let count = 0;
     
     for (let i = 0; i < files.length; ++i) {
         if (files[i].size <= maxFileSize) {
             formData.append('file_' + i, files[i]);
+            fileArray[count] = files[i];
+            ++count;
         }
     }
-    
+
     $.ajax({
         url: getController() + '/Upload',
         type: 'POST',
@@ -85,17 +89,17 @@ function sendFiles(files) {
         contentType: false,
         processData: false,
         success: function(result) { // Result — путь файла, его стоит передать в скрытый инпут, если это возможно
-            document.getElementsByName('filePathInput')[0].value = result;
-            previewImages(files);
+            document.getElementsByName('filePathInput')[0].setAttribute('value', result);
+            previewImages(fileArray);
         }
     });
 }
 
 function previewImages(files) {
-    let preview = dropArea.lastElementChild.firstElementChild;
+    let preview = dropArea.getElementsByClassName('row')[0];
     let anyImageInFiles = false;
     changePostPanelHeight();
-    
+
     for (let i = 0; i < files.length; ++i) {
         const file = files[i];
 
@@ -104,23 +108,24 @@ function previewImages(files) {
         }
 
         if (!anyImageInFiles) {
-            preview.removeChild(pic);
+            preview.removeChild(pic.parentNode);
             anyImageInFiles = true;
         }
 
+        setStatusThreadButton();
+        
         let col = document.createElement('div')
         col.classList.add('col-6');
         const img = document.createElement('img');
         img.classList.add('img-fluid');
-        img.file = file;
         col.appendChild(img);
         preview.appendChild(col);
-        
+
         const reader = new FileReader();
-        reader.onload = (function(aImg) { 
-            return function(e) { 
-                aImg.src = e.target.result; 
-            }; 
+        reader.onload = (function(aImg) {
+            return function(e) {
+                aImg.src = e.target.result;
+            };
         })(img);
         reader.readAsDataURL(file);
     }
@@ -131,6 +136,6 @@ function getController() {
 
     if (controller === '')
         controller = window.location.pathname;
-    
+
     return controller;
 }

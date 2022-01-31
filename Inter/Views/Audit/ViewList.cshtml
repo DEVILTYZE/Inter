@@ -10,73 +10,94 @@
     <div class="row mb-2">
         <h1 class="display-3">@ViewBag.Title</h1>
     </div>
-    <div class="row mb-3 justify-content-between">
+    <div class="row mb-3">
         <div class="col-6">
-            <form asp-action="ViewList" method="post" enctype="multipart/form-data">
-                <input class="col-9" type="search" name="searchPattern"/>
-                <input class="btn btn-inter-dark shadow" type="submit" value="Поиск"/>
+            <form class="container ps-0" asp-action="ViewList" method="post" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-9">
+                        <div class="form-floating">
+                            <input class="form-control" id="searchPattern" name="searchPattern" placeholder="Поиск"/>
+                            <label for="searchPattern">Поиск</label>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <input class="btn shadow" type="submit" value="Поиск"/>
+                    </div>
+                </div>
             </form>
         </div>
-        <div class="col-auto">
-            <a class="btn btn-inter-dark shadow" asp-action="ClearAudit">Очистить аудит</a>
+        <div class="col-auto ms-auto">
+            <a class="btn shadow" asp-action="ClearAudit">Очистить аудит</a>
         </div>
     </div>
     <div class="row mb-3 justify-content-end">
-        @if (ViewBag.Page == 0)
-        {
-            <a class="btn btn-inter-dark mr-1 disabled shadow" asp-action="ViewList" asp-route-page="0" role="button" 
-               aria-disabled="true">&lt;</a>
-        }
-        else
-        {
-            <a class="btn btn-inter-dark mr-1" asp-action="ViewList" asp-route-page="@((int)ViewBag.Page - 1)" 
-               role="button">&lt;</a>
-        }
-        <a class="btn btn-inter-dark disabled shadow">@(ViewBag.Page + 1)</a>
-        @if (Model.Count < ((int)ViewBag.Page + 1) * 500)
-        {
-            <a class="btn btn-inter-dark disabled shadow" asp-action="ViewList" asp-route-page="0" role="button" 
-               aria-disabled="true">&gt;</a>
-        }
-        else
-        {
-            <a class="btn btn-inter-dark shadow" asp-action="ViewList" asp-route-page="@((int)ViewBag.Page + 1)" 
-               role="button">&gt;</a>
-        }
+        <div class="col-auto">
+            <ul class="pagination">
+                @if (ViewBag.Page == 0)
+                {
+                    <li class="page-item disabled shadow">
+                        <a class="page-link" asp-action="ViewList">&lt;</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item shadow">
+                        <a class="page-link" asp-action="ViewList" asp-route-page="@((int)ViewBag.Page - 1)">&lt;</a>
+                    </li>
+                }
+                <li class="page-item disabled shadow">
+                    <a class="page-link">@(ViewBag.Page + 1)</a>
+                </li>
+                @if (((int)ViewBag.Page + 1) * ConstHelper.CountAuditDocumentsPerPage - Model.Count 
+                     >= ConstHelper.CountAuditDocumentsPerPage || ViewBag.Page == 0 && Model.Count < ConstHelper.CountAuditDocumentsPerPage)
+                {
+                    <li class="page-item disabled shadow">
+                        <a class="page-link" asp-action="ViewList">&gt;</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item shadow">
+                        <a class="page-link" asp-action="ViewList" asp-route-page="@((int)ViewBag.Page + 1)">&gt;</a>
+                    </li>
+                }
+            </ul>
+        </div>
     </div>
     <div class="row">
         <div class="col">
             <div class="table-responsive-xl">
-                <table class="table table-xl table-dark table-striped table-hover align-middle">
+                <table class="table table-xl table-striped table-hover align-middle">
                     <thead>
                     <tr>
-                        <th scope="col">ID</th>
+                        <th scope="col">№</th>
                         <th scope="col">Время</th>
                         <th scope="col">Пользователь</th>
                         <th scope="col">Действие</th>
                         <th scope="col">Объект</th>
                         <th scope="col">Результат</th>
-                        <th scope="col">Подробнее</th>
+                        <th scope="col">Дополнительно</th>
                     </tr>
                     </thead>
                     <tbody>
                     @{
-                        const int maxCount = 500; // Исправил константу здесь, исправь и в ифе вверху.
-                        var count = (int)ViewBag.Page * maxCount;
-                        var length = maxCount > Model.Count - count ? Model.Count - count : maxCount;
+                        var count = (int)ViewBag.Page * ConstHelper.CountAuditDocumentsPerPage;
+                        var length = ConstHelper.CountAuditDocumentsPerPage > Model.Count - count 
+                            ? Model.Count - count 
+                            : ConstHelper.CountAuditDocumentsPerPage;
 
                         for (var i = count; i < count + length; ++i)
                         {
                             var index = i;
                             <tr>
                                 <th scope="row">@(i + 1)</th>
-                                <td>@Model[i].Time</td>
+                                <td>@Model[i].Time.ToString(ConstHelper.DateFormatSecs)</td>
                                 <td>@(Model[i].User is null ? "NOT_LOGINED" : Model[i].User.Name)</td>
                                 <td>@Model[i].Method</td>
                                 <td>@Model[i].Item</td>
                                 <td>@Model[i].Result</td>
-                                <td><a class="btn btn-inter-dark shadow" asp-action="Info" asp-route-id="@Model[index].Id" 
-                                       asp-route-page="@ViewBag.Page">+</a></td>
+                                <td><a class="btn shadow" asp-action="Info" asp-route-id="@Model[index].Id" 
+                                       asp-route-page="@ViewBag.Page">Подробнее</a></td>
                             </tr>
                         }
                     }

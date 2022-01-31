@@ -8,6 +8,8 @@ namespace Inter.Helpers
 {
     public class AuditHelper
     {
+        public int Length => (int)_db.Audit.CountDocuments(_builder.Empty);
+        
         private const int MaxCountOfEntries = 5000;
         private readonly InterService _db;
         private readonly FilterDefinitionBuilder<AuditEntry> _builder;

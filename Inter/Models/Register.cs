@@ -21,7 +21,7 @@ namespace Inter.Models
         [DataType(DataType.Password)]
         public string Password { get; set; }
         
-        [Display(Name = "Подтвердите пароль:")]
+        [Display(Name = "Подтвердите пароль")]
         [Compare("Password", ErrorMessage = "Пароли не совпадают")]
         [DataType(DataType.Password)]
         public string ConfirmPassword { get; set; }

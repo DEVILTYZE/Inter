@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Globalization;
+using Inter.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
@@ -46,6 +46,8 @@ namespace Inter.Models
         
         [HiddenInput]
         [DataType(DataType.Date)]
+        [BsonElement]
+        [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
         public DateTime Time { get; set; }
         
         [HiddenInput]
@@ -67,7 +69,7 @@ namespace Inter.Models
         public string Info { get; set; }
 
         public bool Contains(string pattern) 
-            => Time.ToString(CultureInfo.CurrentCulture).ToUpper().Contains(pattern.ToUpper()) || IpAddress.Contains(pattern) ||
+            => Time.ToString(ConstHelper.DateFormatSecs).ToUpper().Contains(pattern.ToUpper()) || IpAddress.Contains(pattern) ||
                User.Name.ToUpper().Contains(pattern.ToUpper()) || User.Email.ToUpper().Contains(pattern.ToUpper()) || 
                string.CompareOrdinal(Method.ToString().ToUpper(), pattern.ToUpper()) == 0 || 
                string.CompareOrdinal(Result.ToString().ToUpper(), pattern.ToUpper()) == 0 || 

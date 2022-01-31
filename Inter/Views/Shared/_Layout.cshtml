@@ -1,6 +1,10 @@
 ﻿@{
     var pathHelper = new PathHelper(Url);
     var returnUrl = Context.Request.Path.Value + Context.Request.QueryString.Value;
+    var theme = Context.Request.Cookies["theme"] ?? ConstHelper.LightThemeName;
+    var isMainController = AccountHelper.IsMainController(returnUrl);
+    var columnXlSize = isMainController ? 10 : 12;
+    var columnMdSize = isMainController ? 9 : 12;
     
     if (string.CompareOrdinal(returnUrl, ConstHelper.LoginPath) != 0 && !string.IsNullOrEmpty(ViewBag.ReturnUrl))
         returnUrl = ViewBag.ReturnUrl;
@@ -14,12 +18,13 @@
     <title>@ViewBag.Title – INTER</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/css/site.css"/>
+    <link rel="stylesheet" href="~/css/@(theme)Theme.css" />
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
 <header>
-    <nav class="navbar navbar-expand-md navbar-toggleable-sm navbar-dark nav-inter shadow">
+    <nav class="navbar navbar-expand-md navbar-toggleable-sm shadow">
         <div class="container flex-wrap flex-md-nowrap">
             <a class="navbar-brand" asp-controller="Board" asp-action="ViewList">
                 <img src="@Url.Content("~/files/")_system/images/navbar_icon.png" alt="" class="d-inline-block">
@@ -30,51 +35,61 @@
                 <ul class="navbar-nav flex-row flex-wrap bd-navbar-nav pt-2 py-md-0">
                     @if (AccountHelper.GetAccessIndex(Context.User, RoleName.Admin) >= 0)
                     {
-                        <li class="nav-item col-6">
+                        <li class="nav-item col-6 fw-bold">
                             <a class="nav-link" asp-controller="Audit" asp-action="ViewList">Аудит</a>
                         </li>
                     }
                 </ul>
                 <hr class="d-md text-white-50">
-                <ul class="navbar-nav flex-row flex-wrap ms-md-auto">
+                <ul class="navbar-nav flex-row flex-wrap ms-md-auto align-items-center">
+                    <li class="nav-item col-auto me-2">
+                        <button id="theme-button" class="theme-button" value="@theme" onclick="changeTheme()">
+                            <img src="@Url.Content($"~/files/_system/images/theme_{theme}_icon.svg")" alt="Смена темы"
+                                 class="rounded" />
+                        </button>
+                    </li>
                     @if (Context.User.Identity is null || !Context.User.Identity.IsAuthenticated)
                     {
-                        <li class="nav-item col-12">
+                        <li class="nav-item col-6 pt-1">
                             <div class="dropdown">
-                                <button class="btn btn-inter-dark dropdown-toggle" type="button"
+                                <button class="btn dropdown-toggle" type="button"
                                         data-bs-toggle="dropdown" id="login-dropdown" aria-expanded="false">
-                                    Вход/Регистрация
+                                    Вход / Регистрация
                                 </button>
-                                
-                                <div style="background-color: var(--dark-3-inter); color: var(--light-0-inter)" 
-                                     aria-labelledby="login-dropdown" id="account-dropdown" class="dropdown-menu shadow">
+
+                                <div aria-labelledby="login-dropdown" id="account-dropdown" class="dropdown-menu shadow">
                                     <form asp-action="Login" asp-controller="Account" method="post" enctype="multipart/form-data">
-                                        <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                        <input type="hidden" name="returnUrl" value="@returnUrl"/>
                                         <div class="container">
                                             <div class="row mb-2">
-                                                <div class="col-12">
-                                                    <label for="EmailOrName">Email или имя:</label>
-                                                </div>
-                                                <div class="col-12">
-                                                    <input class="textarea-inter shadow" id="EmailOrName" name="EmailOrName" type="text"/>
+                                                <div class="col">
+                                                    <div class="form-floating">
+                                                        <input class="form-control" id="EmailOrName" name="EmailOrName"
+                                                               placeholder="Email или имя" type="text"/>
+                                                        <label for="EmailOrName">Email или имя</label>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-2">
-                                                <div class="col-12">
-                                                    <label for="Password">Пароль:</label>
-                                                </div>
-                                                <div class="col-12">
-                                                    <input class="textarea-inter shadow" id="Password" name="Password" type="password"/>
+                                                <div class="col">
+                                                    <div class="form-floating">
+                                                        <input class="form-control" id="Password" name="Password"
+                                                               placeholder="Пароль" type="password"/>
+                                                        <label for="Password">Пароль</label>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-2 justify-content-center">
-                                                <input class="btn btn-inter-dark shadow" type="submit" value="Войти"/>
+                                                <div class="col-auto">
+                                                    <input class="btn shadow" type="submit" value="Войти"/>
+                                                </div>
                                             </div>
                                             <div class="row mb-2 justify-content-center">или</div>
                                             <div class="row mb-2 justify-content-center">
-                                                <a class="link-light-inter font-weight-bold" asp-controller="Account" asp-action="Register">
-                                                    Зарегистрироваться
-                                                </a>
+                                                <div class="col-auto">
+                                                    <a class="link-inter fw-bold" asp-controller="Account"
+                                                       asp-action="Register">Зарегистрироваться</a>
+                                                </div>
                                             </div>
                                         </div>
                                     </form>
@@ -84,25 +99,28 @@
                     }
                     else
                     {
-                        <li class="nav-item col-12">
+                        <li class="nav-item col-6">
                             <div class="dropdown">
-                                <button class="btn btn-inter-dark border-0 rounded-circle p-0" role="button" 
+                                <button class="btn border-0 rounded-circle p-0" role="button"
                                         id="account-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                     @{
                                         var avatarUrl = Context.User.Claims.First(claim =>
                                             string.CompareOrdinal(claim.Type, "avatarUrl") == 0).Value;
 
-                                        <img src="@pathHelper.GetCompressedFilePath(avatarUrl)" alt="Аватар" 
+                                        <img src="@pathHelper.GetCompressedFilePath(avatarUrl)" alt="Аватар"
                                              class="d-inline-block rounded-circle">
                                     }
                                 </button>
-                                <ul class="dropdown-menu" style="background-color: var(--light-0-inter)" aria-labelledby="account-dropdown">
+                                <ul class="dropdown-menu" aria-labelledby="account-dropdown">
                                     <li>
-                                        <a class="dropdown-item" asp-controller="Account"
-                                           asp-action="Edit">Редактировать</a></li>
+                                        <a class="dropdown-item" asp-controller="Account" asp-action="Edit">
+                                            Редактировать
+                                        </a>
+                                    </li>
                                     <li>
-                                        <a class="dropdown-item" asp-controller="Account"
-                                           asp-action="Logout" asp-route-returnUrl="@returnUrl">Выход</a></li>
+                                        <a class="dropdown-item" asp-controller="Account" asp-action="Logout"
+                                           asp-route-returnUrl="@returnUrl">Выход</a>
+                                    </li>
                                 </ul>
                             </div>
                         </li>
@@ -112,43 +130,70 @@
         </div>
     </nav>
 </header>
-<div class="container-xxl main-container-inter">
+<div class="container-xxl">
     <div class="row flex-xl-nowrap">
-        <div class="col-xl-2 col-md-3">
-            @if (ViewBag.Boards is List<Board> boards)
-            {
-                <div class="container rounded shadow pb-2 pt-2 pt-md-0 mt-2" style="background-color: var(--light-3-inter)">
-                    <button class="col btn btn-inter-dark d-md-none collapsed" type="button" data-bs-toggle="collapse" 
-                            data-bs-target="#left-panel" aria-expanded="false" aria-controls="left-panel">/=/</button>
-                    <div class="collapse d-md-block" id="left-panel">
-                        <div class="row mt-2 mb-2">
-                            <div class="col-auto">
-                                <h1 class="display-6">Борды:</h1>
+        @if (isMainController)
+        {
+            <div class="col-xl-2 col-md-3">
+                @if (ViewBag.Boards is List<Board> boards)
+                {
+                    <div class="container sidebar rounded shadow pb-2 pt-2 pt-md-0 mt-2">
+                        <div class="row pt-2 mb-2">
+                            <div class="col-9 col-md-auto">
+                                <form asp-controller="Forum" asp-action="Search" method="post" id="searchPostForm"
+                                      enctype="multipart/form-data">
+                                    <div class="form-floating">
+                                        <input class="form-control" name="searchPattern" id="searchPattern" 
+                                               type="text" placeholder="Поиск"/>
+                                        <label for="searchPattern">Поиск</label>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="col-3">
+                                <button class="col btn d-md-none collapsed shadow" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#left-panel" aria-expanded="false" aria-controls="left-panel">...</button>
                             </div>
                         </div>
-                        @foreach (var board in boards)
-                        {
-                            <div class="row mb-2">
-                                <div class="col ms-2 me-2 rounded shadow" style="background-color: var(--dark-2-inter)">
-                                    <a class="link-light-inter link-large-inter" asp-controller="Thread" asp-action="ViewList"
-                                       asp-route-boardId="@board.Id">@board.Name</a>
+                        <div class="collapse d-md-block" id="left-panel">
+                            @foreach (var board in boards)
+                            {
+                                <div class="flex-row mb-2">
+                                    <div class="col rounded shadow text-center">
+                                        <a class="link-inter fs-4" asp-controller="Thread" asp-action="ViewList"
+                                           asp-route-boardId="@board.Id">@board.Name</a>
+                                    </div>
                                 </div>
-                            </div>
-                        }
+                            }
+                        </div>
                     </div>
+                }
+            </div>
+        }
+        <main role="main" class="col-xl-@columnXlSize col-md-@columnMdSize pb-3">
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        @RenderBody()
+                    </div>
+                    @* @if (isMainController) *@
+                    @* { *@
+                    @*     <div class="col-xl-2 col-md-12 d-xl-block"> *@
+                    @*         SOMETHING *@
+                    @*     </div> *@
+                    @* } *@
                 </div>
-            }
-        </div>
-        <div class="col-xl-2 d-none d-xl-block" style="order: 2">
-            SOMETHING
-        </div>
-        <main role="main" class="col-xl-8 col-md-6 pb-3">
-            @RenderBody()
+            </div>
         </main>
     </div>
 </div>
+@if (isMainController)
+{
+    <footer class="footer">
 
-<script src="~/js/site.js" asp-append-version="true"></script>
+    </footer>
+}
+
+<script src="@Url.Content("~/js/site.js")" asp-append-version="true"></script>
 @await RenderSectionAsync("Scripts", false)
 </body>
 </html>

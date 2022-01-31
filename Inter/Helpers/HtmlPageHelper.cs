@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Inter.Helpers
@@ -11,9 +12,9 @@ namespace Inter.Helpers
         private const string DivTagName = "div";
         private const string InputTagName = "input";
         
-        public static HtmlString GetDragAndDropField(bool multiple, bool onlyPics)
+        public static HtmlString GetDragAndDropField(IUrlHelper url, bool multiple, bool onlyPics)
         {
-            const string picName = "drag_and_drop_file_upload_arrow.png";
+            const string picName = "drag_and_drop.svg";
             var chooseString = "Выберите файл";
             var dragString = " или перетащите его сюда";
             var mainDiv = new TagBuilder(DivTagName);
@@ -26,6 +27,7 @@ namespace Inter.Helpers
             var script = new TagBuilder("script");
             var hiddenInput = new TagBuilder(InputTagName);
             var row = new TagBuilder(DivTagName);
+            var col = new TagBuilder(DivTagName);
             
             if (multiple)
             {
@@ -38,20 +40,22 @@ namespace Inter.Helpers
                 input.MergeAttribute("accept", "images/*");
             
 
-            mainDiv.AddCssClass( "drag-and-drop-field shadow");
+            mainDiv.AddCssClass("container drag-and-drop-field inter-dark rounded shadow");
             mainDiv.MergeAttributes(new Dictionary<string, string>
             {
                 { "id", "drop-area" }, 
-                { "ondragenter", "changeClass(this, '', 'drag-and-drop-field-highlight')" },
-                { "ondragover", "changeClass(this, '', 'drag-and-drop-field-highlight')" }
+                { "ondragenter", "changeClass(this, '', 'drag-and-drop-highlight')" },
+                { "ondragover", "changeClass(this, '', 'drag-and-drop-highlight')" }
             });
             innerDiv.AddCssClass("container drag-and-drop-inner-field");
+            inputInnerDiv.MergeAttribute("style", "font-size: 1.08em");
             row.AddCssClass("row justify-content-center");
+            col.AddCssClass("col-auto");
             img.AddCssClass("drag-and-drop-pic");
             img.MergeAttributes(new Dictionary<string, string>
             {
                 { "id", "uploadFile" },
-                {"src", "../files/_system/images/" + picName }
+                {"src", url.Content($"~/files/_system/images/{picName}") }
             });
             input.MergeAttributes(new Dictionary<string, string>
             {
@@ -59,7 +63,7 @@ namespace Inter.Helpers
                 { "type", "file" },
                 { "style", "height: 0; width: 0; display: none;" }
             });
-            label.AddCssClass("font-weight-bold");
+            label.AddCssClass("fw-bold");
             label.MergeAttributes(new Dictionary<string, string>
             {
                 { "for", "drag-and-drop-input" },
@@ -68,7 +72,7 @@ namespace Inter.Helpers
             script.MergeAttributes(new Dictionary<string, string>
             {
                 { "lang", "js" },
-                { "src", "../js/dragAndDrop.js" }
+                { "src", url.Content("~/js/dragAndDrop.js") }
             });
             hiddenInput.MergeAttributes(new Dictionary<string, string>
             {
@@ -82,7 +86,8 @@ namespace Inter.Helpers
             inputInnerDiv.InnerHtml.AppendHtml(label);
             inputInnerDiv.InnerHtml.AppendHtml(span);
             mainDiv.InnerHtml.AppendHtml(inputInnerDiv);
-            row.InnerHtml.AppendHtml(img.RenderSelfClosingTag());
+            col.InnerHtml.AppendHtml(img.RenderSelfClosingTag());
+            row.InnerHtml.AppendHtml(col);
             innerDiv.InnerHtml.AppendHtml(row);
             mainDiv.InnerHtml.AppendHtml(hiddenInput);
             mainDiv.InnerHtml.AppendHtml(innerDiv);

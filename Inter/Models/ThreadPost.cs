@@ -5,25 +5,25 @@ namespace Inter.Models
 {
     public class ThreadPost
     {
-        [Display(Name = "Название")]
+        [Display(Name = "Название:")]
         public string Name { get; set; }
 
-        [Display(Name = "Текст поста")]
+        [Display(Name = "Текст поста:")]
         [StringLength(50000, ErrorMessage = "Размер текста выходит за границы")]
         public string Text { get; set; }
         
-        [Display(Name = "Файлы")]
+        [Display(Name = "Файлы:")]
         public string[] FileUrls { get; set; }
         
-        [Display(Name = "Закреплён")]
+        [Display(Name = "Закреплён:")]
         public bool IsPinned { get; set; }
 
         [Required(ErrorMessage = "Не указана роль")]
-        [Display(Name = "Чтение для")]
+        [Display(Name = "Чтение для:")]
         public string ReadRoleName { get; set; }
         
         [Required(ErrorMessage = "Не указана роль")]
-        [Display(Name = "Отвечать для")]
+        [Display(Name = "Отвечать для:")]
         public string WriteRoleName { get; set; }
         
         [Required]

@@ -27,9 +27,13 @@ namespace Inter.Controllers
         [HttpGet]
         public async Task<IActionResult> ViewList(int page = 0)
         {
+            page = page < 0 ? 0 : page;
+            page = page * ConstHelper.CountAuditDocumentsPerPage > _audit.Length 
+                ? _audit.Length / ConstHelper.CountAuditDocumentsPerPage 
+                : page;
             ViewBag.Page = page;
             
-            return View(await _audit.GetAuditInfoAsync());
+            return View((await _audit.GetAuditInfoAsync()).Skip(page * ConstHelper.CountAuditDocumentsPerPage).ToList());
         }
 
         [HttpPost]
@@ -59,10 +63,6 @@ namespace Inter.Controllers
 
             return RedirectToAction(nameof(ViewList));
         }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult Page404() => View();
 
         private async Task<User> GetCurrentUserAsync()
         {

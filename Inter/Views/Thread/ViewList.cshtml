@@ -12,7 +12,9 @@
 
 <div class="container">
     <div class="row mb-2 justify-content-end">
-        <h1 class="display-3">@ViewBag.Title</h1>
+        <div class="col-auto">
+            <h1 class="display-3">@ViewBag.Title</h1>
+        </div>
     </div>
     <div class="row">
         @foreach (var thread in Model)
@@ -24,12 +26,9 @@
             <div class="container mb-2" style="border-bottom: 1px solid var(--black-inter)">
                 <div class="row justify-content-between mt-2 mb-1">
                     <div class="col">
-                        <h1 class="display-6">@thread.Name</h1>
-                    </div>
-                    <div class="col-auto">
-                        <a class="btn btn-inter-dark" asp-action="ViewList" asp-controller="Post"
+                        <a class="link-inter display-6" asp-action="ViewList" asp-controller="Post"
                            asp-route-boardId="@thread.BoardId" asp-route-threadId="@thread.Id">
-                            Открыть тред
+                            @thread.Name
                         </a>
                     </div>
                 </div>
@@ -54,12 +53,10 @@
                                         </a>
                                     </div>
                                     <div class="col-auto">
-                                        <a class="link-light-inter" asp-action="Info" asp-controller="Account" 
-                                           asp-route-id="@post.Poster.Id">
-                                            @post.Poster.Name
-                                        </a>
+                                        <a class="link-inter" asp-action="Info" asp-controller="Account" 
+                                           asp-route-id="@post.Poster.Id">@post.Poster.Name</a>
                                     </div>
-                                    <div class="col-auto">@post.CreationTime</div>
+                                    <div class="col-auto">@post.CreationTime.ToString(ConstHelper.DateFormat)</div>
                                 </div>
                                 @switch (post.FileNames.Count)
                                 {
@@ -91,7 +88,7 @@
                                         var path = pathHelper.GetFilePath(thread, post.FileNames[0]);
 
                                         <div class="row">
-                                            <div class="col-auto" name="media">
+                                            <div class="col-3" name="media">
                                                 <img src="@compressedPath" alt="@post.FileNames[0]" class="img-fluid"/>
                                                 <input type="hidden" value="@path" />
                                             </div>
@@ -125,14 +122,14 @@
     </div>
 </div>
 
-<div id="owp-main-panel" class="container fixed-bottom align-self-center owp-translate" style="transition: 0.6s;">
+<div id="owp-main-panel" class="container fixed-bottom align-self-center owp-translate">
     <div class="row justify-content-center">
-        <div id="owp-btn" class="col-auto out-window-panel rounded-top text-center shadow owp-btn">
+        <div id="owp-btn" class="col-auto rounded-top text-center shadow owp-btn">
             Создать тред
         </div>
     </div>
     <div class="row justify-content-center">
-        <div class="col rounded-top out-window-panel shadow owp-form" style="max-height: var(--max-height-inter)">
+        <div class="col rounded-top shadow owp-form" style="max-height: var(--max-height-inter)">
             @*CONTENT*@
             @if (isAuthorized)
             {
@@ -141,37 +138,45 @@
                     <div class="container">
                         <div class="row mt-2 mb-2">
                             <div class="col">
-                                <input class="textarea-inter shadow" name="Name" placeholder="Название треда..."/>
+                                <div class="form-floating">
+                                    <input class="form-control" id="Name" name="Name" placeholder="Название треда"/>
+                                    <label for="Name">Название треда</label>
+                                </div>
                             </div>
                         </div>
-                        <div class="row mb-2">
-                            <div id="post-text" class="col-8">
-                                <textarea class="textarea-inter shadow" rows="10" type="text" name="Text" style="resize: none" 
-                                    placeholder="Текст шапки треда..."></textarea>
+                        <div class="row">
+                            <div id="post-text" class="col-8 mb-2">
+                                <div class="form-floating" style="height: 100%">
+                                    <textarea class="form-control" rows="10" type="text" id="Text" name="Text" 
+                                        style="resize: none; height: 100%" placeholder="Текст шапки треда"></textarea>
+                                    <label for="Text">Текст шапки треда</label>
+                                </div>
                             </div>
-                            <div id="post-media" class="col-4">
-                                @HtmlPageHelper.GetDragAndDropField(true, false)
+                            <div id="post-media" class="col-4 mb-2">
+                                @HtmlPageHelper.GetDragAndDropField(Url, true, false)
                             </div>
                         </div>
                         @if (accessGranted)
                         {
                             <div class="row justify-content-center">
-                                <div class="col-auto">
+                                <div class="col-auto mb-2">
                                     <label>Читать могут:</label>
                                     <select name="ReadRoleName" asp-items="@ViewBag.Roles"></select>
                                 </div>
-                                <div class="col-auto">
+                                <div class="col-auto mb-2">
                                     <label>Отвечать могут:</label>
                                     <select name="WriteRoleName" asp-items="@ViewBag.Roles"></select>
                                 </div>
-                                <div class="col-auto form-check form-check-inline ps-3 pb-2">
+                                <div class="col-auto form-check form-check-inline pb-2 mb-2">
                                     <input class="form-check-input shadow me-2" name="IsPinned" type="checkbox" id="isPinned"/>
                                     <label class="form-check-label" for="isPinned">(закрепить тред вверху)</label>
                                 </div>
                             </div>
                         }
                         <div class="row mb-2 justify-content-center">
-                            <input class="btn btn-inter-light shadow" id="btnSubmit" type="submit" value="Создать тред" />
+                            <div class="col-auto">
+                                <input class="btn shadow" id="btnSubmit" type="submit" value="Создать тред"/>
+                            </div>
                         </div>
                     </div>
                 </form>   
@@ -181,31 +186,36 @@
                 <form asp-action="login" asp-controller="Account" enctype="multipart/form-data">
                     <input type="hidden" name="returnUrl" value="@returnUrl" />
                     <div class="container">
-                        <div name="login-input" class="row mt-4 mb-2">
-                            <div class="col-3">
-                                <label class="textarea-inter text-right" for="EmailOrNameBottom">Email или имя:</label>
-                            </div>
-                            <div class="col-6">
-                                <input class="textarea-inter shadow" style="height: auto" id="EmailOrNameBottom" 
-                                       name="EmailOrName" type="text" />
+                        <div name="login-input" class="row mt-4 mb-2 justify-content-center">
+                            <div class="col col-md-6">
+                                <div class="form-floating">
+                                    <input class="form-control" id="EmailOrNameBottom" name="EmailOrName" 
+                                           placeholder="Email или имя" type="text"/>
+                                    <label for="EmailOrNameBottom">Email или имя</label>
+                                </div>
                             </div>
                         </div>
-                        <div name="login-input" class="row mb-2">
-                            <div class="col-3">
-                                <label class="textarea-inter text-right" for="PasswordBottom">Пароль:</label>
-                            </div>
-                            <div class="col-6">
-                                <input class="textarea-inter shadow" id="PasswordBottom" name="Password" type="password" />
+                        <div name="login-input" class="row mb-2 justify-content-center">
+                            <div class="col col-md-6">
+                                <div class="form-floating">
+                                    <input class="form-control" id="PasswordBottom" name="Password" 
+                                           placeholder="Пароль" type="password"/>
+                                    <label for="PasswordBottom">Пароль</label>
+                                </div>
                             </div>
                         </div>
                         <div class="row mb-2 justify-content-center">
-                            <input class="btn btn-inter-light shadow" type="submit" value="Войти" />
+                            <div class="col-auto">
+                                <input class="btn shadow" type="submit" value="Войти"/>
+                            </div>
                         </div>
                         <div class="row mb-2 justify-content-center">или</div>
                         <div class="row mb-2 justify-content-center">
-                            <a class="link-dark-inter font-weight-bold" asp-controller="Account" asp-action="Register">
-                                Зарегистрироваться
-                            </a>
+                            <div class="col-auto">
+                                <a class="link-inter fw-bold" asp-controller="Account" asp-action="Register">
+                                    Зарегистрироваться
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -214,5 +224,5 @@
         </div>
     </div>
 </div>
-<script lang="js" src="../js/editor.js"></script>
-<script lang="js" src="../js/mediaViewer.js"></script>
+<script lang="js" src="@Url.Content("~/js/editor.js")"></script>
+<script lang="js" src="@Url.Content("~/js/mediaViewer.js")"></script>

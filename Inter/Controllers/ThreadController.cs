@@ -179,17 +179,20 @@ namespace Inter.Controllers
         public async Task<JsonResult> Upload()
         {
             if (Request.Form.Files.Count == 0)
-                return Json("FILE_ERROR_404");
+                return Json(ConstHelper.FileError404);
             
             var files = Request.Form.Files;
             var resultPaths = new StringBuilder();
             var user = await GetCurrentUserAsync();
 
             if (user is null)
-                return Json("USER_ERROR_404");
+                return Json(ConstHelper.UserError404);
             
             for (var i = 0; i < Math.Min(files.Count, ConstHelper.MaxFilesCount); ++i)
             {
+                if (!FileHelper.IsNormalFileSize(files[i].Length))
+                    return Json(ConstHelper.FileError404);
+                    
                 var fileName = FileHelper.GetNewFileName(files[i]);
                 var path = ConstHelper.TempFolderUrl + "/" + fileName;
                 await FileHelper.SaveFileAsync(files[i], path, _environment);
@@ -203,14 +206,14 @@ namespace Inter.Controllers
         [Authorize]
         public JsonResult Unload(string data)
         {
-            if (string.IsNullOrEmpty(data))
-                return Json("PATH_ERROR_404");
+            if (string.IsNullOrEmpty(data) || string.CompareOrdinal(data, ConstHelper.FileError404) == 0)
+                return Json(ConstHelper.PathError404);
 
             FileHelper.RemoveFiles(data.Split(' ').ToList(), _environment);
             
-            return Json("SUCCESS");
+            return Json(ConstHelper.Success);
         }
-        
+
         private async Task<User> GetCurrentUserAsync()
         {
             var builder = new FilterDefinitionBuilder<User>();

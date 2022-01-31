@@ -1,0 +1,19 @@
+<svg width="400" height="400" xmlns="http://www.w3.org/2000/svg">
+ <!-- Created with SVG Editor - http://github.com/mzalive/SVG Editor/ -->
+ <defs>
+  <filter height="200%" width="200%" y="-50%" x="-50%" id="svg_1_blur">
+   <feGaussianBlur stdDeviation="0" in="SourceGraphic"/>
+  </filter>
+ </defs>
+ <g>
+  <title>background</title>
+  <rect fill="none" id="canvas_background" height="402" width="402" y="-1" x="-1"/>
+  <g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">
+   <rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>
+  </g>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <path stroke="#000" filter="url(#svg_1_blur)" id="svg_1" d="m307.500008,383.499996l0,0c-118.730697,0 -215.000027,-82.141306 -215.000027,-183.499991c0,-101.3457 96.26933,-183.499991 215.000027,-183.499991l0,0c-67.664683,43.317009 -107.49263,111.304976 -107.49263,183.499991s39.827947,140.169997 107.49263,183.499991z" stroke-width="0" fill="#000000"/>
+ </g>
+</svg>

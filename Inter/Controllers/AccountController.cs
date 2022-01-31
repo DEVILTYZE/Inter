@@ -165,20 +165,25 @@ namespace Inter.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Edit([Bind("Id", "Name", "Email", "IsEmailHidden", "Password", "Role", "AvatarUrl")] 
-            User user, string roleId, string filePathInput)
+        public async Task<IActionResult> Edit([Bind("Name", "Email", "IsEmailHidden", "AvatarUrl")] 
+            User user, string filePathInput)
         {
             if (!ModelState.IsValid)
                 return View(user);
+
+            var filter = _builder.Eq("_id", new ObjectId(user.Id));
+            var options = new ReplaceOptions { IsUpsert = true };
+            var currentUser = await GetCurrentUserAsync();
+
+            if (currentUser is null)
+                return RedirectToAction("Page404", "Forum");
+
+            user.Id = currentUser.Id;
+            user.Password = currentUser.Password;
+            user.Role = currentUser.Role;
             
             if (!string.IsNullOrEmpty(filePathInput) && !string.IsNullOrWhiteSpace(filePathInput))
                 FileHelper.UpdateFilePathsUser(filePathInput, user, _environment);
-
-            var role = await _db.Roles.Find(_builderRole.Eq("_id", new ObjectId(roleId))).FirstOrDefaultAsync();
-            user.Role = role ?? (await _db.Roles.Find(_builderRole.Empty).ToListAsync()).First();
-            
-            var filter = _builder.Eq("_id", new ObjectId(user.Id));
-            var options = new ReplaceOptions { IsUpsert = true };
             
             await _db.Users.ReplaceOneAsync(filter, user, options);
             await AuthenticateAsync(user);
@@ -214,7 +219,7 @@ namespace Inter.Controllers
                 return RedirectToAction(nameof(Edit));
             }
             
-            ModelState.AddModelError("", "Некорректный текущий пароль");
+            ModelState.AddModelError("CurrentPassword", "Некорректный текущий пароль");
             
             await _audit.AddAsync(typeof(ChangePassword), MethodType.Edit, ResultType.Failure, 
                 AccountHelper.GetIpAddress(HttpContext), user, $"USER_ID: {user.Id}");
@@ -229,7 +234,7 @@ namespace Inter.Controllers
             var user = await GetCurrentUserAsync();
 
             if (user is null) 
-                return RedirectToAction("ViewList", "Board");
+                return RedirectToAction("Page404", "Forum");
             
             user.AvatarUrl = string.Empty;
             var filter = _builder.Eq("_id", new ObjectId(user.Id));
@@ -290,7 +295,7 @@ namespace Inter.Controllers
                 return RedirectToAction(nameof(ViewList));
 
             if (AccountHelper.GetAccessIndex(HttpContext.User, user.Role.Name) <= 0)
-                return RedirectToAction("Page404", "Audit");
+                return RedirectToAction("Page404", "Forum");
             
             user.Role = _bannedRole;
             user.DeactivateDate = date ?? DateTime.MaxValue; // Добавить бан по доскам (но это потом)

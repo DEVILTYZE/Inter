@@ -11,6 +11,9 @@
           "lib/netstandard2.1/DnsClient.dll": {}
         }
       },
+      "jquery.TypeScript.DefinitelyTyped/3.1.2": {
+        "type": "package"
+      },
       "Microsoft.NETCore.Platforms/5.0.0": {
         "type": "package",
         "compile": {
@@ -245,6 +248,18 @@
         "lib/netstandard2.0/DnsClient.xml",
         "lib/netstandard2.1/DnsClient.dll",
         "lib/netstandard2.1/DnsClient.xml"
+      ]
+    },
+    "jquery.TypeScript.DefinitelyTyped/3.1.2": {
+      "sha512": "km6S6ElHdLPBxNf1qj5vQjkw1rpRe5Hwf/1aFo5TZtl3ZSfc//lcdsVTfPZz78o+/dkhEC+ZJcRONNlVDAJg6A==",
+      "type": "package",
+      "path": "jquery.typescript.definitelytyped/3.1.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Content/Scripts/typings/jquery/jquery.d.ts",
+        "jquery.typescript.definitelytyped.3.1.2.nupkg.sha512",
+        "jquery.typescript.definitelytyped.nuspec"
       ]
     },
     "Microsoft.NETCore.Platforms/5.0.0": {
@@ -593,7 +608,8 @@
     "net5.0": [
       "MongoDB.Driver >= 2.13.1",
       "MongoDB.Driver.GridFS >= 2.13.1",
-      "System.Drawing.Common >= 5.0.2"
+      "System.Drawing.Common >= 5.0.2",
+      "jquery.TypeScript.DefinitelyTyped >= 3.1.2"
     ]
   },
   "packageFolders": {
@@ -656,6 +672,10 @@
           "System.Drawing.Common": {
             "target": "Package",
             "version": "[5.0.2, )"
+          },
+          "jquery.TypeScript.DefinitelyTyped": {
+            "target": "Package",
+            "version": "[3.1.2, )"
           }
         },
         "imports": [

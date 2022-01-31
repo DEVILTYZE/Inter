@@ -3,19 +3,64 @@
 
 // Write your JavaScript code.
 
-document.addEventListener('load', function () {
+document.addEventListener('DOMContentLoaded', function () {
+    
+}, false);
+
+document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('textarea, input').forEach(function (element) {
-        let value = window.sessionStorage[element.name];
-        
-        if (element.value === '' && (value !== '' || value !== null)) {
-            element.value = value;
+        let value = sessionStorage[element.localName];
+        let elementValue = element.getAttribute('value');
+
+        if (elementValue === '' && (value !== '' || value !== null)) {
+            elementValue = value;
         }
-        
+
         element.addEventListener('input', function () {
-            value = element.value;
+            value = elementValue;
         }, false);
     });
 }, false);
+
+function changeTheme() {
+    const darkName = 'dark';
+    const lightName = 'light';
+    let btnTheme = document.getElementById('theme-button');
+    let theme = btnTheme.value;
+    
+    theme = theme === lightName ? darkName : lightName;
+    btnTheme.firstElementChild.src = '/files/_system/images/theme_' + theme + '_icon.svg';
+    btnTheme.value = theme;
+    
+    ajaxLoadTheme(theme);
+    loadTheme(theme);
+}
+
+function loadTheme(theme) {
+    let styleSheets = document.getElementsByTagName('link');
+    let styleSheet;
+    
+    for (let i = 0; i < styleSheets.length; ++i) {
+        if (styleSheets[i].href.endsWith('Theme.css')) {
+            styleSheet = styleSheets[i];
+            break;
+        }
+    }
+    
+    styleSheet.href = '/css/' + theme + 'Theme.css';
+}
+
+function ajaxLoadTheme(theme) {
+    $.ajax({
+        url: "Forum/LoadTheme",
+        type: "POST",
+        data: {theme: theme},
+        dataType: "text",
+        success: function (result) {
+            console.log("Theme status: " + result);
+        }
+    });
+}
 
 function toggleClass(elem, className) {
     elem.classList.toggle(className);
@@ -29,15 +74,33 @@ function changeClass(elem, className, changedClassName) {
         elem.classList.remove(className);
         return;
     }
-    
+
     elem.classList.replace(className, changedClassName);
 }
 
-function getCoords(elem) {
-    let box = elem.getBoundingClientRect();
+function getCoords(element) {
+    let box = element.getBoundingClientRect();
 
     return {
         top: box.top + scrollY,
         left: box.left + scrollX
     };
+}
+
+let searchInput = document.getElementById('searchPattern');
+
+if (searchInput !== null && searchInput !== undefined) {
+    searchInput.addEventListener('keyup', function (event) {
+        submitSearchForm(event);
+    }, false);
+}
+
+function submitSearchForm(event) {
+    if (event.key === 'Enter') {
+        let formElement = document.getElementById('searchPostForm');
+
+        if (formElement !== null && formElement !== undefined) {
+            formElement.submit();
+        }
+    }
 }

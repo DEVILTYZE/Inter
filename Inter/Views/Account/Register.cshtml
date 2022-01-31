@@ -31,7 +31,7 @@
                         <label class="textarea-inter text-right" asp-for="Name"></label>
                     </div>
                     <div class="col-4">
-                        <input class="textarea-inter shadow" asp-for="Name"/>
+                        <input class="textarea-inter" asp-for="Name"/>
                     </div>
                     <div class="col-4">
                         <span asp-validation-for="Name"></span>
@@ -44,7 +44,7 @@
                         <label class="textarea-inter text-right" asp-for="Password"></label>
                     </div>
                     <div class="col-4">
-                        <input class="textarea-inter shadow" asp-for="Password"/>
+                        <input class="textarea-inter" asp-for="Password"/>
                     </div>
                     <div class="col-4">
                         <span asp-validation-for="Password"></span>
@@ -57,7 +57,7 @@
                         <label class="textarea-inter text-right" asp-for="ConfirmPassword"></label>
                     </div>
                     <div class="col-4">
-                        <input class="textarea-inter shadow" asp-for="ConfirmPassword"/>
+                        <input class="textarea-inter" asp-for="ConfirmPassword"/>
                     </div>
                     <div class="col-4">
                         <span asp-validation-for="ConfirmPassword"></span>
@@ -66,8 +66,8 @@
             </div>
             <div class="col mb-3">
                 <div class="row justify-content-center">
-                    <input class="btn btn-inter-dark shadow me-3" type="submit" value="Зарегистрироваться"/>
-                    <a class="btn btn-inter-dark shadow ms-3" asp-action="ViewList" asp-controller="Board">Отмена</a>
+                    <input class="btn shadow me-3" type="submit" value="Зарегистрироваться"/>
+                    <a class="btn shadow ms-3" asp-action="ViewList" asp-controller="Board">Отмена</a>
                 </div>
             </div>
         </form>

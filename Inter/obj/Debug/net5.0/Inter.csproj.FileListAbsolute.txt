@@ -69,6 +69,7 @@ E:\Disk D\ProjectsCode\C#\RealProjects\Inter\Inter\obj\Debug\net5.0\Razor\Views\
 E:\Disk D\ProjectsCode\C#\RealProjects\Inter\Inter\obj\Debug\net5.0\Razor\Views\Post\ViewList.cshtml.g.cs
 E:\Disk D\ProjectsCode\C#\RealProjects\Inter\Inter\obj\Debug\net5.0\Razor\Views\Thread\ViewList.cshtml.g.cs
 E:\Disk D\ProjectsCode\C#\RealProjects\Inter\Inter\bin\Debug\net5.0\Web.config
-E:\Disk D\ProjectsCode\C#\RealProjects\Inter\Inter\obj\Debug\net5.0\Razor\Views\Audit\Page404.cshtml.g.cs
 E:\Disk D\ProjectsCode\C#\RealProjects\Inter\Inter\obj\Debug\net5.0\Razor\Views\Audit\Info.cshtml.g.cs
 E:\Disk D\ProjectsCode\C#\RealProjects\Inter\Inter\obj\Debug\net5.0\Razor\Views\Account\ChangePassword.cshtml.g.cs
+E:\Disk D\ProjectsCode\C#\RealProjects\Inter\Inter\obj\Debug\net5.0\Razor\Views\Forum\Search.cshtml.g.cs
+E:\Disk D\ProjectsCode\C#\RealProjects\Inter\Inter\obj\Debug\net5.0\Razor\Views\Forum\Page404.cshtml.g.cs

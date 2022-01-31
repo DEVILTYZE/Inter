@@ -1,10 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "lWFhawfsty3/9sIvl5CeWE5L7LRL1cVTH4qUa6dN9BcMy+pR5zHXz8AuSX4tiggdTdTOFYhnce6hfDqD5bZT+w==",
+  "dgSpecHash": "2kJE7bEk2Mjn3HcnoHEW6L5Txjghl6aBEZx/eoOHa0h7BucBogfQZpRYP+zrMRDSkm0Hm2cq44cllFifWFsMOQ==",
   "success": true,
   "projectFilePath": "E:\\Disk D\\ProjectsCode\\C#\\RealProjects\\Inter\\Inter\\Inter.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\user\\.nuget\\packages\\dnsclient\\1.4.0\\dnsclient.1.4.0.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\jquery.typescript.definitelytyped\\3.1.2\\jquery.typescript.definitelytyped.3.1.2.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\microsoft.netcore.platforms\\5.0.0\\microsoft.netcore.platforms.5.0.0.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\microsoft.win32.systemevents\\5.0.0\\microsoft.win32.systemevents.5.0.0.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\mongodb.bson\\2.13.1\\mongodb.bson.2.13.1.nupkg.sha512",

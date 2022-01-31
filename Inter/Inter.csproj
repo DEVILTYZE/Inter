@@ -6,6 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="jquery.TypeScript.DefinitelyTyped" Version="3.1.2" />
       <PackageReference Include="MongoDB.Driver" Version="2.13.1" />
       <PackageReference Include="MongoDB.Driver.GridFS" Version="2.13.1" />
       <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
@@ -29,9 +30,22 @@
       <_ContentIncludedByDefault Remove="wwwroot\files\imgbrd\board_616dae55435a18e5901078b1\thread_0\post_0\comp_img\EvilArthas.png" />
       <_ContentIncludedByDefault Remove="wwwroot\files\imgbrd\board_616dae55435a18e5901078b1\thread_0\post_0\EvilArthas.png" />
       <_ContentIncludedByDefault Remove="wwwroot\files\imgbrd\board_616dae55435a18e5901078b1\_main\EvilArthas.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\ts\dragAndDrop.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\ts\dragAndDrop.js.map" />
+      <_ContentIncludedByDefault Remove="wwwroot\ts\dragAndDrop.ts" />
+      <_ContentIncludedByDefault Remove="wwwroot\ts\editor.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\ts\editor.js.map" />
+      <_ContentIncludedByDefault Remove="wwwroot\ts\editor.ts" />
+      <_ContentIncludedByDefault Remove="wwwroot\ts\mediaViewer.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\ts\mediaViewer.js.map" />
+      <_ContentIncludedByDefault Remove="wwwroot\ts\mediaViewer.ts" />
+      <_ContentIncludedByDefault Remove="wwwroot\ts\site.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\ts\site.js.map" />
+      <_ContentIncludedByDefault Remove="wwwroot\ts\site.ts" />
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Views\Api" />
       <Folder Include="wwwroot\files\accnt" />
       <Folder Include="wwwroot\files\imgbrd" />
     </ItemGroup>

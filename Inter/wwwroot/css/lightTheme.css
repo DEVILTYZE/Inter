@@ -1,0 +1,96 @@
+﻿/*LIGHT THEME*/
+
+body {
+    background-color: var(--light-0-inter);
+    color: var(--dark-0-inter);
+}
+
+a {
+    color: var(--dark-0-inter);
+}
+
+.theme-button img {
+    background-color: var(--light-7-inter);
+}
+
+.theme-button img:hover {
+    background-color: var(--light-3-inter);
+}
+
+.link-inter:hover, .nav-link:hover {
+    color: var(--dark-20-inter);
+}
+
+.nav-link {
+    color: var(--dark-10-inter);
+}
+
+.navbar, .sidebar {
+    background-color: var(--light-10-inter);
+}
+
+.btn {
+    background-color: var(--light-7-inter);
+    color: var(--dark-0-inter);
+}
+
+.btn:hover {
+    color: var(--dark-30-inter);
+}
+
+.form-control, .form-floating .form-control {
+    background-color: var(--light-1-inter);
+    color: var(--dark-0-inter);
+    border-color: var(--light-3-inter);
+}
+
+.dropdown-menu {
+    background-color: var(--light-7-inter);
+}
+
+.dropdown-menu .dropdown-item {
+    color: var(--dark-0-inter);
+}
+
+.dropdown-menu .dropdown-item:hover {
+    background-color: var(--light-10-inter);
+}
+
+.page-item .page-link {
+    background-color: var(--light-7-inter);
+    color: var(--dark-0-inter);
+    border-color: var(--light-3-inter);
+}
+
+.page-item.disabled .page-link {
+    background-color: var(--light-3-inter);
+    color: var(--dark-20-inter);
+    border-color: var(--light-1-inter);
+}
+
+.owp-btn, .owp-form {
+    background-color: var(--light-10-inter);
+}
+
+.owp-btn:hover {
+    background-color: var(--light-7-inter);
+}
+
+.drag-and-drop-field {
+    background-color: var(--light-7-inter);
+    color: var(--dark-0-inter);
+}
+
+.drag-and-drop-highlight {
+    background-color: var(--light-3-inter);
+    color: var(--dark-0-inter);
+}
+
+.table {
+    background-color: var(--light-3-inter);
+    color: var(--dark-0-inter);
+    --bs-table-striped-color: var(--dark-10-inter);
+    --bs-table-hover-color: var(--dark-0-inter);
+    --bs-table-striped-bg: rgba(0, 0, 0, 0.05);
+    --bs-table-hover-bg: rgba(0, 0, 0, 0.1);
+}

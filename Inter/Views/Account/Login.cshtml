@@ -19,7 +19,7 @@
                         <label class="textarea-inter text-right" asp-for="EmailOrName"></label>
                     </div>
                     <div class="col-4">
-                        <input class="textarea-inter shadow" asp-for="EmailOrName"/>
+                        <input class="textarea-inter" asp-for="EmailOrName"/>
                     </div>
                     <div class="col-4">
                         <span asp-validation-for="EmailOrName"></span>
@@ -32,7 +32,7 @@
                         <label class="textarea-inter text-right" asp-for="Password"></label>
                     </div>
                     <div class="col-4">
-                        <input class="textarea-inter shadow" asp-for="Password"/>
+                        <input class="textarea-inter" asp-for="Password"/>
                     </div>
                     <div class="col-4">
                         <span asp-validation-for="Password"></span>
@@ -41,8 +41,8 @@
             </div>
             <div class="col mb-3">
                 <div class="row justify-content-center">
-                    <input class="btn btn-inter-dark shadow me-3" type="submit" value="Войти"/>
-                    <a class="btn btn-inter-dark shadow ms-3" asp-action="ViewList" asp-controller="Board">Отмена</a>
+                    <input class="btn shadow me-3" type="submit" value="Войти"/>
+                    <a class="btn shadow ms-3" asp-action="ViewList" asp-controller="Board">Отмена</a>
                 </div>
             </div>
         </form>
