@@ -6,104 +6,95 @@
     Layout = "_Layout";
 }
 
-<div class="container">
-    <div class="row mb-2">
-        <h1 class="display-3">@ViewBag.Title</h1>
-    </div>
-    <div class="row mb-3">
-        <div class="col-6">
-            <form class="container ps-0" asp-action="ViewList" method="post" enctype="multipart/form-data">
-                <div class="row">
-                    <div class="col-9">
-                        <div class="form-floating">
-                            <input class="form-control" id="searchPattern" name="searchPattern" placeholder="Поиск"/>
-                            <label for="searchPattern">Поиск</label>
-                        </div>
-                    </div>
-                    <div class="col-3">
-                        <input class="btn shadow" type="submit" value="Поиск"/>
-                    </div>
+<h1 class="display-3 mb-2 text-md-start text-center">@ViewBag.Title</h1>
+<div class="d-sm-flex flex-sm-row align-items-center mb-2">
+    <form class="container mb-2" asp-action="ViewList" method="post" enctype="multipart/form-data">
+        <div class="row align-items-center">
+            <div class="col-9">
+                <div class="form-floating">
+                    <input class="form-control" id="searchPattern" name="searchPattern" placeholder="Поиск" autocomplete="off" />
+                    <label for="searchPattern">Поиск</label>
                 </div>
-            </form>
-        </div>
-        <div class="col-auto ms-auto">
-            <a class="btn shadow" asp-action="ClearAudit">Очистить аудит</a>
-        </div>
-    </div>
-    <div class="row mb-3 justify-content-end">
-        <div class="col-auto">
-            <ul class="pagination">
-                @if (ViewBag.Page == 0)
-                {
-                    <li class="page-item disabled shadow">
-                        <a class="page-link" asp-action="ViewList">&lt;</a>
-                    </li>
-                }
-                else
-                {
-                    <li class="page-item shadow">
-                        <a class="page-link" asp-action="ViewList" asp-route-page="@((int)ViewBag.Page - 1)">&lt;</a>
-                    </li>
-                }
-                <li class="page-item disabled shadow">
-                    <a class="page-link">@(ViewBag.Page + 1)</a>
-                </li>
-                @if (((int)ViewBag.Page + 1) * ConstHelper.CountAuditDocumentsPerPage - Model.Count 
-                     >= ConstHelper.CountAuditDocumentsPerPage || ViewBag.Page == 0 && Model.Count < ConstHelper.CountAuditDocumentsPerPage)
-                {
-                    <li class="page-item disabled shadow">
-                        <a class="page-link" asp-action="ViewList">&gt;</a>
-                    </li>
-                }
-                else
-                {
-                    <li class="page-item shadow">
-                        <a class="page-link" asp-action="ViewList" asp-route-page="@((int)ViewBag.Page + 1)">&gt;</a>
-                    </li>
-                }
-            </ul>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <div class="table-responsive-xl">
-                <table class="table table-xl table-striped table-hover align-middle">
-                    <thead>
-                    <tr>
-                        <th scope="col">№</th>
-                        <th scope="col">Время</th>
-                        <th scope="col">Пользователь</th>
-                        <th scope="col">Действие</th>
-                        <th scope="col">Объект</th>
-                        <th scope="col">Результат</th>
-                        <th scope="col">Дополнительно</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @{
-                        var count = (int)ViewBag.Page * ConstHelper.CountAuditDocumentsPerPage;
-                        var length = ConstHelper.CountAuditDocumentsPerPage > Model.Count - count 
-                            ? Model.Count - count 
-                            : ConstHelper.CountAuditDocumentsPerPage;
-
-                        for (var i = count; i < count + length; ++i)
-                        {
-                            var index = i;
-                            <tr>
-                                <th scope="row">@(i + 1)</th>
-                                <td>@Model[i].Time.ToString(ConstHelper.DateFormatSecs)</td>
-                                <td>@(Model[i].User is null ? "NOT_LOGINED" : Model[i].User.Name)</td>
-                                <td>@Model[i].Method</td>
-                                <td>@Model[i].Item</td>
-                                <td>@Model[i].Result</td>
-                                <td><a class="btn shadow" asp-action="Info" asp-route-id="@Model[index].Id" 
-                                       asp-route-page="@ViewBag.Page">Подробнее</a></td>
-                            </tr>
-                        }
-                    }
-                    </tbody>
-                </table>
+            </div>
+            <div class="col-3">
+                <input class="btn shadow" type="submit" value="Поиск"/>
             </div>
         </div>
+    </form>
+    <div class="col-auto offset-md-3 offset-sm-2">
+        <a class="btn shadow" asp-action="ClearAudit">Очистить аудит</a>
     </div>
+</div>
+<div class="d-flex flex-row justify-content-end mb-2">
+    <ul class="pagination">
+        @if (ViewBag.Page == 0)
+        {
+            <li class="page-item disabled shadow">
+                <a class="page-link" asp-action="ViewList">&lt;</a>
+            </li>
+        }
+        else
+        {
+            <li class="page-item shadow">
+                <a class="page-link" asp-action="ViewList" asp-route-page="@((int)ViewBag.Page - 1)">&lt;</a>
+            </li>
+        }
+        <li class="page-item disabled shadow">
+            <a class="page-link">@(ViewBag.Page + 1)</a>
+        </li>
+        @if (((int)ViewBag.Page + 1) * ConstHelper.CountAuditDocumentsPerPage - Model.Count >= ConstHelper.CountAuditDocumentsPerPage 
+             || ViewBag.Page == 0 && Model.Count < ConstHelper.CountAuditDocumentsPerPage)
+        {
+            <li class="page-item disabled shadow">
+                <a class="page-link" asp-action="ViewList">&gt;</a>
+            </li>
+        }
+        else
+        {
+            <li class="page-item shadow">
+                <a class="page-link" asp-action="ViewList" asp-route-page="@((int)ViewBag.Page + 1)">&gt;</a>
+            </li>
+        }
+    </ul>
+</div>
+<div class="table-responsive-md">
+    <table class="table table-md table-striped table-hover align-middle text-center">
+        <thead>
+        <tr>
+            <th scope="col">№</th>
+            <th scope="col">Время</th>
+            <th scope="col">Пользователь</th>
+            <th scope="col">Действие</th>
+            <th scope="col">Объект</th>
+            <th scope="col">Результат</th>
+            <th scope="col">Дополнительно</th>
+        </tr>
+        </thead>
+        <tbody>
+        @{
+            var count = (int)ViewBag.Page * ConstHelper.CountAuditDocumentsPerPage;
+            var length = ConstHelper.CountAuditDocumentsPerPage > Model.Count - count 
+                ? Model.Count - count 
+                : ConstHelper.CountAuditDocumentsPerPage;
+
+            for (var i = count; i < count + length; ++i)
+            {
+                var index = i;
+                <tr>
+                    <th scope="row">@(i + 1)</th>
+                    <td>@Model[i].Time.ToString(ConstHelper.DateFormatSecs)</td>
+                    <td>@(Model[i].User is null ? RoleName.Anon : Model[i].User.Name)</td>
+                    <td>@Model[i].Method</td>
+                    <td>@Model[i].Item</td>
+                    <td>@Model[i].Result</td>
+                    <td>
+                        <a class="btn shadow" asp-action="Info" asp-route-id="@Model[index].Id" asp-route-page="@ViewBag.Page">
+                            Подробнее
+                        </a>
+                    </td>
+                </tr>
+            }
+        }
+        </tbody>
+    </table>
 </div>

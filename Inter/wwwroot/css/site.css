@@ -21,15 +21,27 @@ html {
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
-  font: var(--font-inter);
   position: relative;
   min-height: 100px;
+  min-width: 250px;
 }
 
 body {
   /* Margin bottom by footer height */
   margin-bottom: 60px;
   overflow-x: hidden;
+  font: var(--font-inter);
+  font-family: var(--font-family-inter);
+}
+
+body {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  body {
+    font-size: 16px;
+  }
 }
 
 .footer {
@@ -53,13 +65,15 @@ body {
   --light-20-inter: #4f496c;
   --light-10-inter: #857db5;
   --light-7-inter: #a09acb;
+  --light-5-inter: #948dbf;
   --light-3-inter: #bab5d7;
   --light-1-inter: #cdccf0;
-  --light-0-inter: #e0dfff;
+  --light-0-inter: #eae9ff;
   --white-inter: #ffffff;
   --height-inter: 100%;
   --max-height-inter: 65%;
-  --font-inter: Consolas, serif;
+  --font-inter: serif;
+  --font-family-inter: "Segoe UI";
 }
 
 /* INTER */
@@ -82,7 +96,7 @@ body {
 
 .text-danger-inter {
   color: var(--red-inter);
-  background-color: var(--light-10-inter);
+  /*background-color: var(--light-10-inter);*/
 }
 
 .link-inter {
@@ -99,24 +113,25 @@ body {
   text-align: center;
   min-height: 75px;
   min-width: 120px;
-  max-height: 250px;
+  /*max-height: 250px;*/
   max-width: 400px;
   height: 100%;
   width: 100%;
-  padding: 0;
+  padding-left: 1em;
+  padding-right: 1em;
   justify-content: center;
 }
 
 .drag-and-drop-inner-field {
-  max-height: 82.5%;
-  width: auto;
+  /*max-height: 82.5%;*/
+  /*width: auto;*/
   margin: 10px;
   padding: 5px;
   border: 2px dashed var(--black-inter);
-  justify-content: center;
 }
 
 .drag-and-drop-pic {
+  position: relative;
   padding: 0 10px 10px;
   max-width: 55%;
   max-height: 100%;
@@ -154,10 +169,6 @@ body {
   min-width: 100px;
 }
 
-.post-viewer {
-  width: 70%;
-}
-
 .media-viewer {
   display: flex;
   flex-direction: column;
@@ -175,4 +186,8 @@ body {
   opacity: .6;
   background-color: var(--black-inter);
   color: var(--light-0-inter);
+}
+
+div[name = "media"] img {
+    cursor: pointer;
 }

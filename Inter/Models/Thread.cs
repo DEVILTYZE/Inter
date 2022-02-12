@@ -34,5 +34,8 @@ namespace Inter.Models
 
         [HiddenInput]
         public string BoardId { get; set; }
+        
+        [HiddenInput]
+        public bool IsDeleted { get; set; }
     }
 }

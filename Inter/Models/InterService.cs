@@ -55,7 +55,7 @@ namespace Inter.Models
             
             var defaultUser = new User
             {
-                Name = "InterServer",
+                Name = "INTER",
                 Email = "inter@EMAIL.NET",
                 IsEmailHidden = true,
                 Role = roles[0]

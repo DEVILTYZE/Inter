@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
@@ -35,5 +36,8 @@ namespace Inter.Models
         
         [Display(Name = "Дата деактивации")]
         public DateTime DeactivateDate { get; set; }
+        
+        [HiddenInput]
+        public bool IsDeleted { get; set; }
     }
 }

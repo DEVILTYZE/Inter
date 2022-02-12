@@ -7,7 +7,7 @@ namespace Inter.Helpers
     {
         private readonly IUrlHelper _url;
 
-        private readonly string[] _avatarSizes = { "/small", "/normal" };
+        private readonly string[] _avatarSizes = { "/small.jpg", "/normal.jpg" };
 
         public PathHelper(IUrlHelper url) => _url = url;
 

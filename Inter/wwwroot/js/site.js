@@ -3,8 +3,19 @@
 
 // Write your JavaScript code.
 
+let config;
+
 document.addEventListener('DOMContentLoaded', function () {
+    let requestUrl = "/Forum/GetConfig";
+    let request = new XMLHttpRequest();
     
+    request.open('get', requestUrl);
+    request.responseType = "json";
+    request.send();
+    
+    request.addEventListener('load', function () {
+        config = JSON.parse(request.response);
+    }, false);
 }, false);
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -23,8 +34,10 @@ document.addEventListener('DOMContentLoaded', function () {
 }, false);
 
 function changeTheme() {
-    const darkName = 'dark';
-    const lightName = 'light';
+    const darkName = config['DarkThemeName'];
+    const lightName = config['LightThemeName'];
+    //const darkName = 'dark';
+    //const lightName = 'light';
     let btnTheme = document.getElementById('theme-button');
     let theme = btnTheme.value;
     
@@ -52,7 +65,7 @@ function loadTheme(theme) {
 
 function ajaxLoadTheme(theme) {
     $.ajax({
-        url: "Forum/LoadTheme",
+        url: "/Forum/LoadTheme",
         type: "POST",
         data: {theme: theme},
         dataType: "text",

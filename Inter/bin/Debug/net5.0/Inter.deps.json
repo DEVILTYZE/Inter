@@ -33,6 +33,7 @@
     ".NETCoreApp,Version=v5.0": {
       "Inter/1.0.0": {
         "dependencies": {
+          "BouncyCastle": "1.8.9",
           "MongoDB.Driver": "2.13.1",
           "MongoDB.Driver.GridFS": "2.13.1",
           "System.Drawing.Common": "5.0.2",
@@ -326,6 +327,17 @@
         },
         "compile": {
           "Inter.dll": {}
+        }
+      },
+      "BouncyCastle/1.8.9": {
+        "runtime": {
+          "lib/BouncyCastle.Crypto.dll": {
+            "assemblyVersion": "1.8.9.0",
+            "fileVersion": "1.8.20343.1"
+          }
+        },
+        "compile": {
+          "lib/BouncyCastle.Crypto.dll": {}
         }
       },
       "DnsClient/1.4.0": {
@@ -2210,6 +2222,13 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "BouncyCastle/1.8.9": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-axnBgvdD5n+FnEG6efk/tfKuMFru7R/EoISH9zjh319yb3HD24TEHSAbNN/lTRT2ulOGRxDgOsCjkuk08iwWPg==",
+      "path": "bouncycastle/1.8.9",
+      "hashPath": "bouncycastle.1.8.9.nupkg.sha512"
     },
     "DnsClient/1.4.0": {
       "type": "package",

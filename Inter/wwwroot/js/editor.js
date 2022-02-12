@@ -1,14 +1,4 @@
 ﻿
-/// <reference path="site.ts" />
-
-const createThreadString = 'Создать тред';
-const closePanelString = 'Закрыть панель';
-const editorMaxHeight = 0.65;
-const form = document.getElementsByClassName('owp-form')[0];
-const owpTranslate = document.getElementsByClassName('owp-translate')[0];
-const postText = document.getElementById('post-text');
-const postMedia = document.getElementById('post-media');
-const loginInputs = document.getElementsByName('login-input');
 const owpBtn = document.getElementById('owp-btn');
 const btnSubmit = document.getElementById('btnSubmit');
 
@@ -21,6 +11,9 @@ let isThreadFormReady = false;
 });
 
 owpBtn.addEventListener('click',  function () {
+    const createThreadString = 'Создать тред';
+    const closePanelString = 'Закрыть панель';
+    const owpTranslate = document.getElementById('owp-main-panel');
     toggleClass(owpTranslate, 'owp-translate');
 
     if (owpBtn.innerText === createThreadString) {
@@ -31,13 +24,20 @@ owpBtn.addEventListener('click',  function () {
 }, false);
 
 function changePostPanelHeight() {
-    let height = form.clientHeight;
+    let height = document.getElementsByClassName('owp-form')[0].clientHeight;
     let root = document.documentElement;
     root.style.setProperty('--height-inter', ' ' + height + 'px');
 }
 
 function changeMaxHeight() {
-    let height = document.documentElement.clientHeight * editorMaxHeight;
+    let coef = 1;
+    const editorMaxHeight = Number(config['EditorMaxHeight']);
+    //const editorMaxHeight = 0.65;
+    
+    if (document.documentElement.clientHeight > document.documentElement.clientWidth)
+        coef = 1.5;
+    
+    let height = document.documentElement.clientHeight * editorMaxHeight / coef;
     let root = document.documentElement;
     root.style.setProperty('--max-height-inter', ' ' + height + 'px');
 }
@@ -45,6 +45,9 @@ function changeMaxHeight() {
 function changePostView() {
     let height = document.documentElement.clientHeight;
     let width = document.documentElement.clientWidth;
+    const postText = document.getElementById('post-text');
+    const postMedia = document.getElementById('post-media');
+    const loginInputs = document.getElementsByName('login-input');
 
     if (height > width) {
         if (postText !== null) {
@@ -78,18 +81,30 @@ function changePostView() {
 }
 
 if (btnSubmit !== null && btnSubmit !== undefined) {
-    let textArea = postText.getElementsByTagName('textarea')[0];
+    const maxTextLength = Number(config['MaxTextLength']);
+    //const maxTextLength = 35000;
+    const className = "text-danger-inter"
+    const postText = document.getElementById('post-text');
+    const textArea = postText.getElementsByTagName('textarea')[0];
+    const textLengthCounter = document.getElementById('text-length-counter');
 
     if (textArea.value.length === 0) {
         setStatusThreadButton(true);
     }
+
+    textArea.addEventListener('input', function () {
+        textLengthCounter.innerText = (maxTextLength - textArea.value.length).toString();
+    }, false);
 
     textArea.addEventListener('input',
         function (event) {
             if (event.currentTarget.value.length === 0) {
                 isThreadFormReady = false;
                 setStatusThreadButton(true);
+            } else if (Number(textLengthCounter.innerText) < 0) {
+                textLengthCounter.classList.add(className);
             } else {
+                textLengthCounter.classList.remove(className);
                 isThreadFormReady = true;
                 setStatusThreadButton();
             }
@@ -103,3 +118,4 @@ function setStatusThreadButton(isDisable = false) {
         btnSubmit.classList.remove('disabled');
     }
 }
+

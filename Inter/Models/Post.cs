@@ -26,12 +26,15 @@ namespace Inter.Models
         public DateTime CreationTime { get; set; }
         
         [HiddenInput]
-        public User Poster { get; set; }
+        public string PosterId { get; set; }
 
         [HiddenInput] 
         public string ThreadId { get; set; }
         
         [HiddenInput]
         public string BoardId { get; set; }
+        
+        [HiddenInput]
+        public bool IsDeleted { get; set; }
     }
 }

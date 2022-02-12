@@ -73,3 +73,5 @@ E:\Disk D\ProjectsCode\C#\RealProjects\Inter\Inter\obj\Debug\net5.0\Razor\Views\
 E:\Disk D\ProjectsCode\C#\RealProjects\Inter\Inter\obj\Debug\net5.0\Razor\Views\Account\ChangePassword.cshtml.g.cs
 E:\Disk D\ProjectsCode\C#\RealProjects\Inter\Inter\obj\Debug\net5.0\Razor\Views\Forum\Search.cshtml.g.cs
 E:\Disk D\ProjectsCode\C#\RealProjects\Inter\Inter\obj\Debug\net5.0\Razor\Views\Forum\Page404.cshtml.g.cs
+E:\Disk D\ProjectsCode\C#\RealProjects\Inter\Inter\bin\Debug\net5.0\BouncyCastle.Crypto.dll
+E:\Disk D\ProjectsCode\C#\RealProjects\Inter\Inter\bin\Debug\net5.0\config.json

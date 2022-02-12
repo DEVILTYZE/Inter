@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Text.Json;
 using Inter.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -15,7 +17,7 @@ namespace Inter.Controllers
                 theme = ConstHelper.LightThemeName;
             else if (string.CompareOrdinal(theme, ConstHelper.LightThemeName) != 0 &&
                 string.CompareOrdinal(theme, ConstHelper.DarkThemeName) != 0)
-                return Json(ConstHelper.Failure);
+                return Json(ConstError.Failure);
             
             var options = new CookieOptions
             {
@@ -25,9 +27,29 @@ namespace Inter.Controllers
             
             Response.Cookies.Append("theme", theme, options);
 
-            return Json(ConstHelper.Success);
+            return Json(ConstError.Success);
         }
+        
+        [HttpGet]
+        public JsonResult GetConfig()
+        {
+            try
+            {
+                using var sr = new StreamReader(ConstHelper.ConfigName);
+                var result = new JsonResult(sr.ReadToEnd())
+                {
+                    ContentType = "json",
+                    SerializerSettings = new JsonSerializerOptions(JsonSerializerDefaults.Web)
+                };
 
+                return result;
+            }
+            catch
+            {
+                return Json(ConstError.Failure);
+            }
+        }
+        
         [HttpPost]
         public IActionResult Search(string searchPattern)
         {

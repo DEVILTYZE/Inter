@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
+using Org.BouncyCastle.Crypto.Digests;
 using Inter.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -15,13 +16,13 @@ namespace Inter.Helpers
 
         public static string GetHashedPassword(string password, string email)
         {
-            password = GetHash(password);
             var salt = GetSalt(email);
             var indexOfPasswordCenter = password.Length / 2;
             var indexOfSaltCenter = salt.Length / 2;
-
-            return password[..indexOfPasswordCenter] + salt[indexOfSaltCenter..] + password[indexOfPasswordCenter..]
-                   + salt[..indexOfSaltCenter] + ConstString;
+            password = password[..indexOfPasswordCenter] + salt[indexOfSaltCenter..] + password[indexOfPasswordCenter..]
+                       + salt[..indexOfSaltCenter] + ConstString;
+            
+            return GetHash(password);
         }
 
         public static int GetAccessIndex(ClaimsPrincipal user, string accessRoleName)
@@ -61,17 +62,43 @@ namespace Inter.Helpers
         {
             var selectList = new SelectList(items.Where(item => string.CompareOrdinal(
                 item.Name, RoleName.Banned) != 0), "Name", "Name");
-            selectList.First(item => item.Text == RoleName.Anon).Selected = true;
+
+            if (selectList.Any(item => string.CompareOrdinal(item.Text, RoleName.Anon) == 0))
+                selectList.First(item => string.CompareOrdinal(item.Text, RoleName.Anon) == 0).Selected = true;
+            else
+                selectList.First(item => string.CompareOrdinal(item.Text, RoleName.User) == 0).Selected = true;
 
             return selectList;
         }
-        
-        private static string GetHash(string password)
-        {
-            using var hasher = new SHA1Managed();
-            var hash = Encoding.Default.GetString(hasher.ComputeHash(Encoding.Default.GetBytes(password)));
 
-            return hash;
+        public static SelectList[] GetWriteAndReadSelectLists(IEnumerable<Role> items)
+        {
+            var itemsArray = items.ToArray();
+            var lists = new SelectList[2];
+            lists[0] = GetSelectList(itemsArray);
+            lists[1] = GetSelectList(itemsArray.Where(item => string.CompareOrdinal(item.Name, RoleName.Anon) != 0));
+
+            return lists;
+        }
+
+        private static string GetHash(string passwordAndSalt)
+        {
+            var hasher = new Sha3Digest(512);
+            var input = Encoding.ASCII.GetBytes(passwordAndSalt);
+            
+            hasher.BlockUpdate(input, 0, input.Length);
+
+            var result = new byte[64];
+
+            hasher.DoFinal(result, 0);
+            var hash = BitConverter.ToString(result);
+            
+            return hash.Replace("-", "").ToLowerInvariant();
+
+            // using var hasher = new SHA256Managed();
+            // var hash = Encoding.Default.GetString(hasher.ComputeHash(Encoding.Default.GetBytes(passwordAndSalt)));
+            //
+            // return hash;
         }
 
         private static string GetSalt(string email)

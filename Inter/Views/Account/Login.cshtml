@@ -5,46 +5,32 @@
     Layout = "_Layout";
 }
 
-<div class="container">
-    <div class="row mb-2">
-        <h1 class="display-3">@ViewBag.Title</h1>
+<h1 class="display-3 mb-2 text-md-start text-center">@ViewBag.Title</h1>
+<form class="container-md" asp-action="Login" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl"/>
+    <div class="row justify-content-center">
+        <div class="col-md-6 col mb-2">
+            <div class="form-floating">
+                <input class="form-control" asp-for="EmailOrName" placeholder="..." />
+                <label asp-for="EmailOrName"></label>
+            </div>
+        </div>
+        <div class="w-100"></div>
+        <span asp-validation-for="EmailOrName"></span>
+        <div class="col-md-6 col mb-2">
+            <div class="form-floating">
+                <input class="form-control" asp-for="Password" placeholder="..." />
+                <label asp-for="Password"></label>
+            </div>
+        </div>
+        <div class="w-100"></div>
+        <span asp-validation-for="Password"></span>
+        <div class="col-auto mb-2">
+            <input class="btn shadow" type="submit" value="Войти"/>
+        </div>
+        <div class="col-auto mb-2">
+            <a class="btn shadow" asp-action="ViewList" asp-controller="Board">Отмена</a>
+        </div>
     </div>
-    <div class="flex-row">
-        <form asp-action="Login" method="post" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl"/>
-            <div class="col mb-3">
-                <div class="row">
-                    <div class="col-4">
-                        <label class="textarea-inter text-right" asp-for="EmailOrName"></label>
-                    </div>
-                    <div class="col-4">
-                        <input class="textarea-inter" asp-for="EmailOrName"/>
-                    </div>
-                    <div class="col-4">
-                        <span asp-validation-for="EmailOrName"></span>
-                    </div>
-                </div>
-            </div>
-            <div class="col mb-3">
-                <div class="row">
-                    <div class="col-4">
-                        <label class="textarea-inter text-right" asp-for="Password"></label>
-                    </div>
-                    <div class="col-4">
-                        <input class="textarea-inter" asp-for="Password"/>
-                    </div>
-                    <div class="col-4">
-                        <span asp-validation-for="Password"></span>
-                    </div>
-                </div>
-            </div>
-            <div class="col mb-3">
-                <div class="row justify-content-center">
-                    <input class="btn shadow me-3" type="submit" value="Войти"/>
-                    <a class="btn shadow ms-3" asp-action="ViewList" asp-controller="Board">Отмена</a>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
+</form>

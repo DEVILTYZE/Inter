@@ -43,12 +43,16 @@ namespace Inter.Controllers
                 return RedirectToAction("ViewList", "Board");
 
             board.Threads ??= new List<Thread>();
-            
-            ViewBag.Roles = AccountHelper.GetSelectList(await _db.Roles.Find(_builderRole.Empty).ToListAsync());
+            var lists = AccountHelper.GetWriteAndReadSelectLists(await _db.Roles.Find(_builderRole.Empty)
+                .ToListAsync());
+
+            ViewBag.Users = await _db.Users.Find(new FilterDefinitionBuilder<User>().Empty).ToListAsync();
+            ViewBag.ReadRoles = lists[0];
+            ViewBag.WriteRoles = lists[1];
             ViewBag.Boards = await _db.Boards.Find(_builder.Empty).ToListAsync();
             ViewBag.BoardName = board.Name;
             ViewBag.BoardId = boardId;
-            return View(board.Threads);
+            return View(board.Threads.Take(15));
         }
 
         [HttpGet]
@@ -58,7 +62,11 @@ namespace Inter.Controllers
             if (boardId is null)
                 return RedirectToAction("ViewList", "Board");
 
-            ViewBag.Roles = AccountHelper.GetSelectList(await _db.Roles.Find(_builderRole.Empty).ToListAsync());
+            var lists = AccountHelper.GetWriteAndReadSelectLists(await _db.Roles.Find(_builderRole.Empty)
+                .ToListAsync());
+
+            ViewBag.ReadRoles = lists[0];
+            ViewBag.WriteRoles = lists[1];
             ViewBag.BoardId = boardId;
             return View();
         }
@@ -68,7 +76,12 @@ namespace Inter.Controllers
         public async Task<IActionResult> Create([Bind("Name", "Text", "IsPinned", "ReadRoleName", "WriteRoleName", 
             "BoardId")] ThreadPost threadPost, string filePathInput)
         {
-            ViewBag.Roles = AccountHelper.GetSelectList(await _db.Roles.Find(_builderRole.Empty).ToListAsync());
+            var lists = AccountHelper.GetWriteAndReadSelectLists(await _db.Roles.Find(_builderRole.Empty)
+                .ToListAsync());
+
+            ViewBag.ReadRoles = lists[0];
+            ViewBag.WriteRoles = lists[1];
+            
             var user = await GetCurrentUserAsync();
             
             if (!ModelState.IsValid)
@@ -110,7 +123,7 @@ namespace Inter.Controllers
                 Text = text,
                 FileNames = new List<string>(),
                 CreationTime = DateTime.Now,
-                Poster = user,
+                PosterId = user.Id,
                 ThreadId = thread.Id,
                 BoardId = board.Id
             };
@@ -151,27 +164,24 @@ namespace Inter.Controllers
         [Authorize(Roles = RoleName.Admin + ", " + RoleName.Moderator)]
         public async Task<IActionResult> Remove(string boardId, int id)
         {
-            var filter = _builder.Eq("_id", new ObjectId(boardId));
-            var options = new ReplaceOptions { IsUpsert = true };
-            var board = await _db.Boards.Find(filter).FirstOrDefaultAsync();
-            
-            if (board is null)
-                return RedirectToAction("ViewList", "Board");
-
-            var thread = board.Threads.Find(thread => string.CompareOrdinal(thread.Id, id.ToString()) == 0);
-            
-            if (thread is null)
-                return RedirectToAction("ViewList", "Board");
-            
-            FileHelper.RemoveFilesFolder($"imgbrd/board_{board.Id}/thread_{thread.Id}", _environment);
-            
-            board.Threads.Remove(thread);
-
-            await _db.Boards.ReplaceOneAsync(filter, board, options);
-            await _audit.AddAsync(typeof(Thread), MethodType.Remove, ResultType.Success, AccountHelper.GetIpAddress(HttpContext), 
-                await GetCurrentUserAsync(), $"ID: {id}, BOARD_ID: {boardId}, NAME: {thread.Name}, " +
-                $"TEXT: {thread.OriginalPost.Text}");
-            return RedirectToAction("ViewList", "Thread", new { boardId });
+            return await RemoveStatus(boardId, id) switch
+            {
+                1 => RedirectToAction("ViewList", "Board"),
+                2 => RedirectToAction("ViewList", "Board"),
+                _ => RedirectToAction("ViewList", "Thread", new { boardId })
+            };
+        }
+        
+        [HttpPost]
+        [Authorize(Roles = RoleName.Admin + ", " + RoleName.Moderator)]
+        public async Task<IActionResult> ForcedRemove(string boardId, int id)
+        {
+            return await RemoveStatus(boardId, id, true) switch
+            {
+                1 => RedirectToAction("ViewList", "Board"),
+                2 => RedirectToAction("ViewList", "Board"),
+                _ => RedirectToAction("ViewList", "Thread", new { boardId })
+            };
         }
 
         [HttpPost]
@@ -179,19 +189,19 @@ namespace Inter.Controllers
         public async Task<JsonResult> Upload()
         {
             if (Request.Form.Files.Count == 0)
-                return Json(ConstHelper.FileError404);
+                return Json(ConstError.FileError404);
             
             var files = Request.Form.Files;
             var resultPaths = new StringBuilder();
             var user = await GetCurrentUserAsync();
 
             if (user is null)
-                return Json(ConstHelper.UserError404);
+                return Json(ConstError.UserError404);
             
             for (var i = 0; i < Math.Min(files.Count, ConstHelper.MaxFilesCount); ++i)
             {
                 if (!FileHelper.IsNormalFileSize(files[i].Length))
-                    return Json(ConstHelper.FileError404);
+                    return Json(ConstError.FileError404);
                     
                 var fileName = FileHelper.GetNewFileName(files[i]);
                 var path = ConstHelper.TempFolderUrl + "/" + fileName;
@@ -206,14 +216,47 @@ namespace Inter.Controllers
         [Authorize]
         public JsonResult Unload(string data)
         {
-            if (string.IsNullOrEmpty(data) || string.CompareOrdinal(data, ConstHelper.FileError404) == 0)
-                return Json(ConstHelper.PathError404);
+            data = data.Trim();
+            if (string.IsNullOrEmpty(data) || string.CompareOrdinal(data, ConstError.FileError404) == 0)
+                return Json(ConstError.PathError404);
 
             FileHelper.RemoveFiles(data.Split(' ').ToList(), _environment);
             
-            return Json(ConstHelper.Success);
+            return Json(ConstError.Success);
         }
 
+        private async Task<int> RemoveStatus(string boardId, int id, bool isForced = false)
+        {
+            var options = new ReplaceOptions { IsUpsert = true };
+            var board = await _db.Boards.Find(_builder.Eq("_id", new ObjectId(boardId))).FirstOrDefaultAsync();
+
+            if (board is null)
+                return 1;
+
+            var thread = board.Threads.Find(thread => string.CompareOrdinal(thread.Id, id.ToString()) == 0);
+
+            if (thread is null)
+                return 2;
+
+            FileHelper.RemoveFilesFolder($"imgbrd/board_{board.Id}/thread_{thread.Id}", _environment);
+            
+            if (isForced)
+                board.Threads.Remove(thread);
+            else
+            {
+                foreach (var post in thread.Posts)
+                    post.IsDeleted = true;
+                
+                thread.IsDeleted = true;
+            }
+
+            await _db.Boards.ReplaceOneAsync(_builder.Eq("_id", new ObjectId(boardId)), board, options);
+            await _audit.AddAsync(typeof(Thread), MethodType.Remove, ResultType.Success, AccountHelper.GetIpAddress(HttpContext), 
+                await GetCurrentUserAsync(), $"ID: {id}, BOARD_ID: {boardId}, NAME: {thread.Name}, " +
+                $"TEXT: {thread.OriginalPost.Text}");
+            return 0;
+        }
+        
         private async Task<User> GetCurrentUserAsync()
         {
             var builder = new FilterDefinitionBuilder<User>();

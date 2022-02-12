@@ -3,8 +3,11 @@
     var returnUrl = Context.Request.Path.Value + Context.Request.QueryString.Value;
     var theme = Context.Request.Cookies["theme"] ?? ConstHelper.LightThemeName;
     var isMainController = AccountHelper.IsMainController(returnUrl);
-    var columnXlSize = isMainController ? 10 : 12;
-    var columnMdSize = isMainController ? 9 : 12;
+    var columnXXlSize = isMainController ? 10 : 12;
+    var classMdName = "col-md-" + (columnXXlSize - 1);
+
+    if (!isMainController)
+        classMdName = string.Empty;
     
     if (string.CompareOrdinal(returnUrl, ConstHelper.LoginPath) != 0 && !string.IsNullOrEmpty(ViewBag.ReturnUrl))
         returnUrl = ViewBag.ReturnUrl;
@@ -64,18 +67,18 @@
                                             <div class="row mb-2">
                                                 <div class="col">
                                                     <div class="form-floating">
-                                                        <input class="form-control" id="EmailOrName" name="EmailOrName"
+                                                        <input class="form-control" id="EmailOrNameNav" name="EmailOrName"
                                                                placeholder="Email или имя" type="text"/>
-                                                        <label for="EmailOrName">Email или имя</label>
+                                                        <label for="EmailOrNameNav">Email или имя</label>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-2">
                                                 <div class="col">
                                                     <div class="form-floating">
-                                                        <input class="form-control" id="Password" name="Password"
+                                                        <input class="form-control" id="PasswordNav" name="Password"
                                                                placeholder="Пароль" type="password"/>
-                                                        <label for="Password">Пароль</label>
+                                                        <label for="PasswordNav">Пароль</label>
                                                     </div>
                                                 </div>
                                             </div>
@@ -131,25 +134,25 @@
     </nav>
 </header>
 <div class="container-xxl">
-    <div class="row flex-xl-nowrap">
+    <div class="row flex-md-nowrap">
         @if (isMainController)
         {
             <div class="col-xl-2 col-md-3">
                 @if (ViewBag.Boards is List<Board> boards)
                 {
-                    <div class="container sidebar rounded shadow pb-2 pt-2 pt-md-0 mt-2">
-                        <div class="row pt-2 mb-2">
-                            <div class="col-9 col-md-auto">
+                    <div class="container sidebar rounded p-3 pt-md-0 mt-2">
+                        <div class="row align-items-center pt-2 mb-2">
+                            <div class="col-10 col-md-auto">
                                 <form asp-controller="Forum" asp-action="Search" method="post" id="searchPostForm"
                                       enctype="multipart/form-data">
                                     <div class="form-floating">
                                         <input class="form-control" name="searchPattern" id="searchPattern" 
-                                               type="text" placeholder="Поиск"/>
+                                               type="text" placeholder="Поиск" autocomplete="off"/>
                                         <label for="searchPattern">Поиск</label>
                                     </div>
                                 </form>
                             </div>
-                            <div class="col-3">
+                            <div class="col-2">
                                 <button class="col btn d-md-none collapsed shadow" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#left-panel" aria-expanded="false" aria-controls="left-panel">...</button>
                             </div>
@@ -169,20 +172,14 @@
                 }
             </div>
         }
-        <main role="main" class="col-xl-@columnXlSize col-md-@columnMdSize pb-3">
-            <div class="container">
-                <div class="row">
-                    <div class="col">
-                        @RenderBody()
-                    </div>
-                    @* @if (isMainController) *@
-                    @* { *@
-                    @*     <div class="col-xl-2 col-md-12 d-xl-block"> *@
-                    @*         SOMETHING *@
-                    @*     </div> *@
-                    @* } *@
-                </div>
-            </div>
+        <main role="main" class="col-xxl-@columnXXlSize @classMdName pb-3">
+            @RenderBody()
+            @* @if (isMainController) *@
+            @* { *@
+            @*     <div class="col-xl-2 col-md-12 d-xl-block"> *@
+            @*         SOMETHING *@
+            @*     </div> *@
+            @* } *@
         </main>
     </div>
 </div>

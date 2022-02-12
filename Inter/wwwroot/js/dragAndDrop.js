@@ -1,10 +1,6 @@
 ﻿
-const dragAndDropLight = 'drag-and-drop-highlight';
-const maxFileSize = 10485760;
-
 let dropArea = document.getElementById('drop-area');
 let input = document.getElementById('drag-and-drop-input');
-let pic = document.getElementById('uploadFile');
 let buttonClicked = false;
 
 dropArea.addEventListener('drop', handleDrop, false);
@@ -46,6 +42,7 @@ function preventDefaults(e) {
 }
 
 function fuckBlinks(e) {
+    const dragAndDropLight = 'drag-and-drop-highlight';
     let coords = getCoords(dropArea);
     let dx = e.pageX - coords.left;
     let dy = e.pageY - coords.top;
@@ -56,6 +53,7 @@ function fuckBlinks(e) {
 }
 
 function handleDrop(e) {
+    const dragAndDropLight = 'drag-and-drop-highlight';
     let dt = e.dataTransfer;
     let files = dt.files;
 
@@ -70,6 +68,8 @@ function handleInput() {
 }
 
 function sendFiles(files) {
+    const maxFileSize = Number(config['MaxFileSize']);
+    //const maxFileSize = 10485760;
     let formData = new FormData();
     let fileArray = [];
     let count = 0;
@@ -96,9 +96,14 @@ function sendFiles(files) {
 }
 
 function previewImages(files) {
-    let preview = dropArea.getElementsByClassName('row')[0];
+    const threadController = '/Thread';
+    let pic = document.getElementById('uploadFile');
+    let preview = dropArea.getElementsByClassName('row')[1];
     let anyImageInFiles = false;
-    changePostPanelHeight();
+    
+    if (getController() === threadController) {
+        changePostPanelHeight();
+    }
 
     for (let i = 0; i < files.length; ++i) {
         const file = files[i];
@@ -112,7 +117,9 @@ function previewImages(files) {
             anyImageInFiles = true;
         }
 
-        setStatusThreadButton();
+        if (getController() === threadController) {
+            setStatusThreadButton();
+        }
         
         let col = document.createElement('div')
         col.classList.add('col-6');
@@ -132,7 +139,7 @@ function previewImages(files) {
 }
 
 function getController() {
-    let controller = window.location.pathname.substr(0, window.location.pathname.lastIndexOf('/'));
+    let controller = window.location.pathname.slice(0, window.location.pathname.lastIndexOf('/'));
 
     if (controller === '')
         controller = window.location.pathname;

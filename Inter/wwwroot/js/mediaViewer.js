@@ -1,12 +1,5 @@
 ﻿
-const divId = 'media-view';
 const images = document.getElementsByName('media');
-let mouseX = -1;
-let mouseY = -1;
-let minHeight = document.documentElement.clientHeight * 0.2;
-let minWidth = document.documentElement.clientWidth * 0.2;
-let maxHeight = document.documentElement.clientHeight * 10;
-let maxWidth = document.documentElement.clientWidth * 10;
 let lastOpenedImageUrl;
 
 for (let i = 0; i < images.length; ++i) {
@@ -26,7 +19,11 @@ for (let i = 0; i < images.length; ++i) {
 }
 
 function viewMediaDesktop(url, name) {
-    if (isImgExist() && lastOpenedImageUrl === url) {
+    const divId = 'media-view';
+    let mouseX = -1;
+    let mouseY = -1;
+    
+    if (isImgExist(divId) && lastOpenedImageUrl === url) {
         return;
     }
 
@@ -95,8 +92,8 @@ function viewMediaDesktop(url, name) {
 //    
 // }
 
-function isImgExist() {
-    let divElement = document.getElementById(divId);
+function isImgExist(id) {
+    let divElement = document.getElementById(id);
 
     if (divElement !== null) {
         closeMedia(divElement);
@@ -137,6 +134,10 @@ function setStartPosition(element) {
 }
 
 function changeSize(element, scaleHeight, scaleWidth) {
+    let minHeight = document.documentElement.clientHeight * 0.2;
+    let minWidth = document.documentElement.clientWidth * 0.2;
+    let maxHeight = document.documentElement.clientHeight * 10;
+    let maxWidth = document.documentElement.clientWidth * 10;
     let height = element.offsetHeight + scaleHeight;
     let width = element.offsetWidth + scaleWidth;
 

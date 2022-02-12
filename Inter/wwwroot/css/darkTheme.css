@@ -21,7 +21,7 @@ a {
     color: var(--light-0-inter);
 }
 
-.nav-link {
+.nav-link, .navbar-toggler {
     color: var(--light-7-inter);
 }
 
@@ -34,8 +34,12 @@ a {
     background-color: var(--light-30-inter);
 }
 
+.sidebar .col {
+    background-color: var(--light-20-inter);
+}
+
 .btn {
-    background-color: var(--light-30-inter);
+    background-color: var(--light-20-inter);
     color: var(--light-1-inter);
 }
 
@@ -43,14 +47,15 @@ a {
     color: var(--light-0-inter);
 }
 
-.form-control, .form-floating .form-control {
+.form-control, .form-floating .form-control, .form-select {
     background-color: var(--light-20-inter);
     color: var(--light-0-inter);
     border-color: var(--light-20-inter);
 }
 
-.dropdown-menu {
+.dropdown-menu, .btn.dropdown-toggle {
     background-color: var(--light-30-inter);
+    color: var(--light-0-inter);
 }
 
 .dropdown-menu .dropdown-item {
@@ -84,12 +89,8 @@ a {
 }
 
 .owp-btn:hover {
-    background-color: var(--light-20-inter);
+    background-color: var(--light-30-inter);
 }
-
-/*.navbar.inter-dark .nav-link, .navbar.inter-dark .navbar-toggler {*/
-/*    color: var(--light-10-inter);*/
-/*}*/
 
 .drag-and-drop-field {
     background-color: var(--light-20-inter);
@@ -101,15 +102,28 @@ a {
     color: var(--dark-0-inter);
 }
 
-.board-dark {
-    background-color: var(--light-20-inter);
+.board {
+    background-color: var(--light-30-inter);
+}
+
+.thread {
+    border-bottom: 1px solid var(--light-7-inter);
 }
 
 .table {
-    background-color: var(--dark-30-inter);
+    background-color: var(--light-40-inter);
     color: var(--light-1-inter);
+    border-color: var(--light-7-inter);
     --bs-table-striped-color: var(--light-3-inter);
     --bs-table-hover-color: var(--light-0-inter);
     --bs-table-striped-bg: rgba(0, 0, 0, 0.15);
     --bs-table-hover-bg: rgba(0, 0, 0, 0.2);
+}
+
+.post {
+    background-color: var(--light-20-inter);
+}
+
+.first-post {
+
 }

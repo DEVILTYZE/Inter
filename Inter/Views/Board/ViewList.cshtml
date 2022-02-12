@@ -7,55 +7,45 @@
     var pathHelper = new PathHelper(Url);
 }
 
-<div class="container-md">
-    <div class="row mb-2 justify-content-end">
-        <div class="col-auto">
-            <h1 class="display-3">INTER</h1>
-        </div>
+<h1 class="display-3 mb-2 text-md-end text-center">INTER</h1>
+@if (AccountHelper.GetAccessIndex(Context.User, RoleName.Admin) >= 0)
+{
+    <div class="d-md-flex flex-md-row justify-content-md-end justify-content-center mb-2">
+        <a class="btn shadow" asp-action="Create">Создать</a>
     </div>
-    @if (AccountHelper.GetAccessIndex(Context.User, RoleName.Admin) >= 0)
-    {
-        <div class="row mb-3 justify-content-end">
-            <div class="col-auto">
-                <a class="btn shadow" asp-action="Create">Создать</a>
-            </div>
-        </div>
-    }
-    <div class="row">
-        <div class="container-xl board-dark rounded ps-2 pe-2 mb-4">
-            @foreach (var board in Model)
-            {
-                if (AccountHelper.GetAccessIndex(Context.User, board.AccessRoleName) < 0 && 
-                    AccountHelper.GetAccessIndex(board.AccessRoleName, RoleName.Anon) <= 0)
-                    continue;
+}
 
-                <div class="row justify-content-md-center justify-content-lg-start justify-content-start shadow py-2">
-                    <div class="col-auto align-self-md-start align-self-center py-3">
-                        <img src="@pathHelper.GetFilePath(board)" alt="Изображение доски" class="img-fluid" />
+@foreach (var board in Model)
+{
+    if (AccountHelper.GetAccessIndex(Context.User, board.AccessRoleName) < 0 && 
+        AccountHelper.GetAccessIndex(board.AccessRoleName, RoleName.Anon) <= 0)
+        continue;
+    
+    <div class="container-md board rounded shadow ps-2 pe-2 mb-3">
+        <div class="row justify-content-center justify-content-sm-start py-2">
+            <div class="col-auto align-self-md-start align-self-center py-3">
+                <img src="@pathHelper.GetFilePath(board)" alt="Изображение доски" class="img-fluid" />
+            </div>
+            <div class="col pt-2">
+                <div class="row justify-content-center justify-content-sm-start">
+                    <div class="col-auto">
+                        <a class="link-inter display-5 fw-bold" asp-action="ViewList" asp-controller="Thread" 
+                           asp-route-boardId="@board.Id">@board.Name</a>
                     </div>
-                    <div class="col pt-2">
-                        <div class="row justify-content-md-center justify-content-lg-start justify-content-start">
-                            <div class="col-auto">
-                                <a class="link-inter display-5 fw-bold" asp-action="ViewList" 
-                                   asp-controller="Thread" asp-route-boardId="@board.Id">@board.Name</a>
-                            </div>
-                            @if (AccountHelper.GetAccessIndex(Context.User, RoleName.Admin) >= 0)
-                            {
-                                <div class="col-auto ms-xl-auto ms-md-0 ms-sm-auto">
-                                    <a class="btn shadow" asp-action="Edit" asp-route-id="@board.Id">
-                                        Редактировать
-                                    </a>
-                                </div>
-                            }
+                    <div class="w-100 d-sm-none d-block"></div>
+                    @if (AccountHelper.GetAccessIndex(Context.User, RoleName.Admin) >= 0)
+                    {
+                        <div class="col-auto ms-md-auto ms-0">
+                            <a class="btn shadow" asp-action="Edit" asp-route-id="@board.Id">Редактировать</a>
                         </div>
-                        <div class="row">
-                            <div class="col text-break">
-                                @board.Description
-                            </div>
-                        </div>
+                    }
+                </div>
+                <div class="row">
+                    <div class="col text-break">
+                        @board.Description
                     </div>
                 </div>
-            }
+            </div>
         </div>
     </div>
-</div>
+}

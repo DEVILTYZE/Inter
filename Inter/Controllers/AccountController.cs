@@ -72,28 +72,26 @@ namespace Inter.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var user = await _db.Users.Find(_builder.Regex(
-                "Email", new BsonRegularExpression(model.EmailOrName))).FirstOrDefaultAsync() 
-                       ?? await _db.Users.Find(_builder.Regex(
-                "Name", new BsonRegularExpression(model.EmailOrName))).FirstOrDefaultAsync();
+            var user = await _db.Users.Find(_builder.Or(_builder.Eq("Name", 
+                    model.EmailOrName), _builder.Eq("Email", model.EmailOrName))).FirstOrDefaultAsync();
 
             if (user is null)
             {
-                ModelState.AddModelError("", "Некорректные email или пароль");
+                ModelState.AddModelError("", ConstError.WrongEmailOrPassword);
                 
                 return View(model);
             }
 
             if (string.CompareOrdinal(user.Role.Id, _bannedRole.Id) == 0)
             {
-                ModelState.AddModelError("", "Вы забанены");
+                ModelState.AddModelError("", ConstError.YouAreBanned);
                 
                 return View(model);
             }
                 
-            if (!CheckPassword(model.Password, user))
+            if (!CheckPassword(model.Password.Trim(), user))
             {
-                ModelState.AddModelError("", "Некорректные email или пароль");
+                ModelState.AddModelError("", ConstError.WrongEmailOrPassword);
                 
                 await _audit.AddAsync(typeof(Login), MethodType.LogIn, ResultType.Failure, AccountHelper.GetIpAddress(HttpContext),
                     null, $"USER_ID: {user.Id}");
@@ -123,22 +121,20 @@ namespace Inter.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var user = await _db.Users.Find(_builder.Regex(
-                "Email", new BsonRegularExpression(model.Email))).FirstOrDefaultAsync();
+            var user = await _db.Users.Find(_builder.Eq("Email", model.Email)).FirstOrDefaultAsync();
                        
             if (user is not null)
             {
-                ModelState.AddModelError("Email", "Пользователь с таким email'ом уже существует");
+                ModelState.AddModelError("Email", ConstError.UserEmailExist);
                 
                 return View(model);
             }
             
-            user = await _db.Users.Find(_builder.Regex(
-                "Name", new BsonRegularExpression(model.Email))).FirstOrDefaultAsync();
+            user = await _db.Users.Find(_builder.Eq("Name", model.Name)).FirstOrDefaultAsync();
 
             if (user is not null)
             {
-                ModelState.AddModelError("Name", "Пользователь с таким именем уже существует");
+                ModelState.AddModelError("Name", ConstError.UserNameExist);
                 
                 return View(model);
             }
@@ -165,15 +161,30 @@ namespace Inter.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Edit([Bind("Name", "Email", "IsEmailHidden", "AvatarUrl")] 
+        public async Task<IActionResult> Edit([Bind("Name", "Email", "IsEmailHidden", "AvatarUrl", "Posts")] 
             User user, string filePathInput)
         {
             if (!ModelState.IsValid)
                 return View(user);
 
-            var filter = _builder.Eq("_id", new ObjectId(user.Id));
-            var options = new ReplaceOptions { IsUpsert = true };
             var currentUser = await GetCurrentUserAsync();
+            var sameUsers = await _db.Users.Find(_builder.Eq("Email", user.Email)).ToListAsync();
+            
+            if (sameUsers.Count > 1 && sameUsers.Any(thisUser => string.CompareOrdinal(thisUser.Id, currentUser.Id) != 0))
+            {
+                ModelState.AddModelError("Email", ConstError.UserNameExist);
+                
+                return View(user);
+            }
+            
+            sameUsers = await _db.Users.Find(_builder.Eq("Name", user.Name)).ToListAsync();
+
+            if (sameUsers.Count > 1 && sameUsers.Any(thisUser => string.CompareOrdinal(thisUser.Id, currentUser.Id) != 0))
+            {
+                ModelState.AddModelError("Name", ConstError.UserNameExist);
+                
+                return View(user);
+            }
 
             if (currentUser is null)
                 return RedirectToAction("Page404", "Forum");
@@ -184,6 +195,11 @@ namespace Inter.Controllers
             
             if (!string.IsNullOrEmpty(filePathInput) && !string.IsNullOrWhiteSpace(filePathInput))
                 FileHelper.UpdateFilePathsUser(filePathInput, user, _environment);
+
+            // POST
+            
+            var filter = _builder.Eq("_id", new ObjectId(user.Id));
+            var options = new ReplaceOptions { IsUpsert = true };
             
             await _db.Users.ReplaceOneAsync(filter, user, options);
             await AuthenticateAsync(user);
@@ -219,7 +235,7 @@ namespace Inter.Controllers
                 return RedirectToAction(nameof(Edit));
             }
             
-            ModelState.AddModelError("CurrentPassword", "Некорректный текущий пароль");
+            ModelState.AddModelError("CurrentPassword", ConstError.WrongCurrentPassword);
             
             await _audit.AddAsync(typeof(ChangePassword), MethodType.Edit, ResultType.Failure, 
                 AccountHelper.GetIpAddress(HttpContext), user, $"USER_ID: {user.Id}");
@@ -252,17 +268,18 @@ namespace Inter.Controllers
         public async Task<JsonResult> Upload()
         {
             if (Request.Form.Files.Count == 0)
-                return Json("FILE_ERROR_404");
+                return Json(ConstError.FileError404);
             
             var file = Request.Form.Files[0];
             var fileName = FileHelper.GetNewFileName(file);
             var user = await GetCurrentUserAsync();
 
             if (user is null)
-                return Json("USER_ERROR_404");
+                return Json(ConstError.UserError404);
             
             var path = await FileHelper.SaveAccountImageAsyncOrDefault(file, user.Id, fileName, _environment);
-            return Json(path);
+
+            return Json(path ?? ConstError.FileError404);
         }
         
         [HttpPost]
@@ -270,7 +287,7 @@ namespace Inter.Controllers
         public JsonResult Unload(string data)
         {
             if (string.IsNullOrEmpty(data))
-                return Json("PATH_ERROR_404");
+                return Json(ConstError.PathError404);
 
             var path = data[..data.LastIndexOf('/')];
             var sb = new StringBuilder(data + " ");
@@ -279,7 +296,7 @@ namespace Inter.Controllers
 
             FileHelper.RemoveFiles(sb.ToString().Split(' ').ToList(), _environment);
             
-            return Json("SUCCESS");
+            return Json(ConstError.Success);
         }
 
         [HttpGet]

@@ -121,7 +121,13 @@ namespace Inter.Helpers
 
             var path = $"accnt/user_{userId}/{fileName}";
             var pathDir = environment.WebRootPath + $"\\files\\accnt\\user_{userId}";
-            Directory.CreateDirectory(pathDir);
+            
+            if (!Directory.Exists(pathDir))
+                Directory.CreateDirectory(pathDir);
+            
+            if (File.Exists(Path.Combine(pathDir, fileName)))
+                return null;
+            
             var compressedSmallImage = CropImage(
                 CompressImage(new Bitmap(formFile.OpenReadStream()), MaxSmallAvatarSize), MaxSmallAvatarSize);
             var compressedNormalImage = CropImage(

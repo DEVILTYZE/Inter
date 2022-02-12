@@ -7,83 +7,67 @@
     var pathHelper = new PathHelper(Url);
 }
 
-<div class="container">
-    <div class="row mb-2">
-        <h1 class="display-3">@ViewBag.Title</h1>
-    </div>
+<h1 class="display-3 mb-2 text-md-start text-center">@ViewBag.Title</h1>
+<form class="container-fluid" asp-action="Edit" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input name="roleId" value="@Model.Role.Id" type="hidden"/>
+    <input asp-for="Id" type="hidden"/>
+    <input asp-for="AvatarUrl" type="hidden"/>
     <div class="row">
-        <div class="container-fluid">
-            <form asp-action="Edit" method="post" enctype="multipart/form-data">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <input name="roleId" value="@Model.Role.Id" type="hidden"/>
-                <input asp-for="Id" type="hidden"/>
-                <input asp-for="AvatarUrl" type="hidden"/>
-                <div class="row">
-                    <div class="col-auto">
-                        <div class="container">
-                            <div class="row mb-2">
-                                <div class="col-auto">
-                                    <img src="@pathHelper.GetCompressedFilePath(Model, false)" alt="Аватар" 
-                                         class="img-fluid"/>
-                                </div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-auto">
-                                    <a class="btn" asp-action="RemoveAvatar">Удалить аватар</a>
-                                </div>
-                            </div>
-                            <div class="row">
-                                @HtmlPageHelper.GetDragAndDropField(Url, false, true)
-                            </div>
+        <div class="col-lg-4 col-md-5 col-12">
+            <div class="row mb-2 justify-content-md-start justify-content-center">
+                <div class="col-auto mb-2">
+                    <img src="@pathHelper.GetCompressedFilePath(Model, false)" alt="Аватар" class="img-fluid"/>
+                </div>
+                <div class="d-100"></div>
+                <div class="col-auto mb-2">
+                    <a class="btn" asp-action="RemoveAvatar">Удалить аватар</a>
+                </div>
+                <div class="d-100"></div>
+                <div class="col-auto mb-2">
+                    @HtmlPageHelper.GetDragAndDropField(Url, false, true)
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8 col-md-7 col-12">
+            <div class="container-fluid">
+                <div class="row justify-content-md-start justify-content-center">
+                    <div class="col-md-8 col mb-2">
+                        <div class="form-floating">
+                            <input class="form-control" asp-for="Name" placeholder="..." autocomplete="off" />
+                            <label asp-for="Name"></label>
+                            <span asp-validation-for="Name"></span>
                         </div>
                     </div>
-                    <div class="col-lg mt-2 mb-3">
-                        <div class="container-fluid">
-                            <div class="row mb-1">
-                                <div class="col">
-                                    <div class="form-floating">
-                                        <input class="form-control" asp-for="Name" placeholder="..." />
-                                        <label asp-for="Name"></label>
-                                        <span asp-validation-for="Name"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row mb-1">
-                                <div class="col">
-                                    <div class="form-floating">
-                                        <input class="form-control" asp-for="Email" placeholder="..." />
-                                        <label asp-for="Email"></label>
-                                        <span asp-validation-for="Email"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row mb-1">
-                                <label class="col-auto text-right" asp-for="IsEmailHidden"></label>
-                                <div class="col-6 form-check form-check-inline">
-                                    <input class="form-check-input shadow" asp-for="IsEmailHidden" type="checkbox" 
-                                           id="isEmailHidden"/>
-                                    <label class="form-check-label" for="isEmailHidden">
-                                        (email не будет отображаться в Info)
-                                    </label>
-                                </div>
-                                <span class="col-5" asp-validation-for="IsEmailHidden"></span>
-                            </div>
-                            <div class="row mb-1">
-                                <div class="col-auto">
-                                    <a class="btn shadow" asp-action="ChangePassword">
-                                        Сменить пароль
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-auto">
-                                    <input class="btn shadow" id="btnSubmit" type="submit" value="Сохранить"/>
-                                </div>
-                            </div>
+                    <div class="d-100"></div>
+                    <div class="col-md-8 col mb-2">
+                        <div class="form-floating">
+                            <input class="form-control" asp-for="Email" placeholder="..." autocomplete="off" />
+                            <label asp-for="Email"></label>
+                            <span asp-validation-for="Email"></span>
                         </div>
+                    </div>
+                    <div class="d-100"></div>
+                    <label class="col-auto text-right mb-2" asp-for="IsEmailHidden"></label>
+                    <div class="col-8 form-check form-check-inline mb-2">
+                        <input class="form-check-input shadow" asp-for="IsEmailHidden" type="checkbox" id="isEmailHidden"/>
+                        <label class="form-check-label" for="isEmailHidden">
+                            (email не будет отображаться в Info)
+                        </label>
+                    </div>
+                    <span class="col-md-4 col-12 mb-2" asp-validation-for="IsEmailHidden"></span>
+                    <div class="d-100"></div>
+                    <div class="col-auto order-md-0 order-1 mb-md-2">
+                        <a class="btn shadow" asp-action="ChangePassword">
+                            Сменить пароль
+                        </a>
+                    </div>
+                    <div class="d-md-100 d-none d-md-block"></div>
+                    <div class="col-auto order-md-1 order-0 mb-md-2">
+                        <input class="btn shadow" id="btnSubmit" type="submit" value="Сохранить"/>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
-</div>
+</form>

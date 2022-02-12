@@ -90,15 +90,16 @@ namespace Inter.Controllers
             if (thread is null)
                 return RedirectToAction("ViewList", "Thread", new { post.BoardId });
 
-            var poster = await _db.Users.Find(_userBuilder.Eq("_id", new ObjectId(posterId))).FirstOrDefaultAsync();
+            var user = await _db.Users.Find(_userBuilder.Eq("_id", new ObjectId(posterId))).FirstOrDefaultAsync();
 
-            if (poster is null)
+            if (user is null)
                 return RedirectToAction("Page404", "Forum");
 
             post.Id = thread.Posts.Count > 0 ? (int.Parse(thread.Posts.Last().Id) + 1).ToString() : "0";
             post.FileNames = new List<string>();
             post.CreationTime = DateTime.Now;
-            post.Poster = poster;
+            post.PosterId = user.Id;
+            
             thread.Posts.Add(post);
             var options = new ReplaceOptions { IsUpsert = true };
             
@@ -140,32 +141,58 @@ namespace Inter.Controllers
         [Authorize(Roles = RoleName.Admin + ", " + RoleName.Moderator)]
         public async Task<IActionResult> Remove(string boardId, string threadId, int id)
         {
-            var filter = _builder.Eq("_id", new ObjectId(boardId));
+            return await RemoveStatus(boardId, threadId, id) switch
+            {
+                1 => RedirectToAction("ViewList", "Board"),
+                2 => RedirectToAction("ViewList", "Thread", new { boardId }),
+                3 => RedirectToAction(nameof(ViewList)),
+                _ => RedirectToAction("ViewList", "Post", new { boardId, threadId })
+            };
+        }
+
+        [HttpGet]
+        [Authorize(Roles = RoleName.Admin)]
+        public async Task<IActionResult> ForcedRemove(string boardId, string threadId, int id)
+        {
+            return await RemoveStatus(boardId, threadId, id, true) switch
+            {
+                1 => RedirectToAction("ViewList", "Board"),
+                2 => RedirectToAction("ViewList", "Thread", new { boardId }),
+                3 => RedirectToAction(nameof(ViewList)),
+                _ => RedirectToAction("ViewList", "Post", new { boardId, threadId })
+            };
+        }
+
+        public async Task<int> RemoveStatus(string boardId, string threadId, int id, bool isForced = false)
+        {
             var options = new ReplaceOptions { IsUpsert = true };
-            var board = await _db.Boards.Find(filter).FirstOrDefaultAsync();
-            
+            var board = await _db.Boards.Find(_builder.Eq("_id", new ObjectId(boardId))).FirstOrDefaultAsync();
+
             if (board is null)
-                return RedirectToAction("ViewList", "Board");
+                return 1;
             
             var thread = board.Threads.FirstOrDefault(thread => string.CompareOrdinal(thread.Id, threadId) == 0);
 
             if (thread is null)
-                return RedirectToAction("ViewList", "Thread", new { boardId });
+                return 2;
 
             var post = thread.Posts.FirstOrDefault(post => string.CompareOrdinal(post.Id, id.ToString()) == 0);
 
             if (post is null)
-                return RedirectToAction(nameof(ViewList));
+                return 3;
             
             FileHelper.RemoveFiles(post.FileNames, _environment);
-            
-            thread.Posts.Remove(post);
-            
-            await _db.Boards.ReplaceOneAsync(filter, board, options);
+
+            post.IsDeleted = true;
+
+            if (isForced)
+                thread.Posts.Remove(post);
+
+            await _db.Boards.ReplaceOneAsync(_builder.Eq("_id", new ObjectId(boardId)), board, options);
             await _audit.AddAsync(typeof(Post), MethodType.Remove, ResultType.Success, AccountHelper.GetIpAddress(HttpContext), 
                 await GetCurrentUserAsync(), $"ID: {id}, THREAD_ID: {threadId}, BOARD_ID: {boardId}, " +
                 $"TEXT: {post.Text}");
-            return RedirectToAction("ViewList", "Post", new { boardId, threadId });
+            return 0;
         }
 
         private async Task<User> GetCurrentUserAsync()

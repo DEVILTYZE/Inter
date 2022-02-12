@@ -26,7 +26,6 @@ namespace Inter.Helpers
             var span = new TagBuilder("span");
             var script = new TagBuilder("script");
             var hiddenInput = new TagBuilder(InputTagName);
-            var row = new TagBuilder(DivTagName);
             var col = new TagBuilder(DivTagName);
             
             if (multiple)
@@ -47,9 +46,9 @@ namespace Inter.Helpers
                 { "ondragenter", "changeClass(this, '', 'drag-and-drop-highlight')" },
                 { "ondragover", "changeClass(this, '', 'drag-and-drop-highlight')" }
             });
-            innerDiv.AddCssClass("container drag-and-drop-inner-field");
+            innerDiv.AddCssClass("row justify-content-center drag-and-drop-inner-field");
             inputInnerDiv.MergeAttribute("style", "font-size: 1.08em");
-            row.AddCssClass("row justify-content-center");
+            inputInnerDiv.AddCssClass("row");
             col.AddCssClass("col-auto");
             img.AddCssClass("drag-and-drop-pic");
             img.MergeAttributes(new Dictionary<string, string>
@@ -87,8 +86,7 @@ namespace Inter.Helpers
             inputInnerDiv.InnerHtml.AppendHtml(span);
             mainDiv.InnerHtml.AppendHtml(inputInnerDiv);
             col.InnerHtml.AppendHtml(img.RenderSelfClosingTag());
-            row.InnerHtml.AppendHtml(col);
-            innerDiv.InnerHtml.AppendHtml(row);
+            innerDiv.InnerHtml.AppendHtml(col);
             mainDiv.InnerHtml.AppendHtml(hiddenInput);
             mainDiv.InnerHtml.AppendHtml(innerDiv);
 

@@ -21,12 +21,16 @@ a {
     color: var(--dark-20-inter);
 }
 
-.nav-link {
+.nav-link, .navbar-toggler {
     color: var(--dark-10-inter);
 }
 
 .navbar, .sidebar {
     background-color: var(--light-10-inter);
+}
+
+.sidebar .col {
+    background-color: var(--light-1-inter);
 }
 
 .btn {
@@ -38,14 +42,15 @@ a {
     color: var(--dark-30-inter);
 }
 
-.form-control, .form-floating .form-control {
+.form-control, .form-floating .form-control, .form-select {
     background-color: var(--light-1-inter);
     color: var(--dark-0-inter);
-    border-color: var(--light-3-inter);
+    border-color: var(--light-1-inter);
 }
 
-.dropdown-menu {
-    background-color: var(--light-7-inter);
+.dropdown-menu, .btn.dropdown-toggle {
+    background-color: var(--light-5-inter);
+    color: var(--dark-0-inter);
 }
 
 .dropdown-menu .dropdown-item {
@@ -86,11 +91,28 @@ a {
     color: var(--dark-0-inter);
 }
 
-.table {
+.board {
     background-color: var(--light-3-inter);
+}
+
+.thread {
+    border-bottom: 1px solid var(--light-7-inter);
+}
+
+.table {
+    background-color: var(--light-1-inter);
     color: var(--dark-0-inter);
+    border-color: var(--dark-0-inter);
     --bs-table-striped-color: var(--dark-10-inter);
     --bs-table-hover-color: var(--dark-0-inter);
     --bs-table-striped-bg: rgba(0, 0, 0, 0.05);
     --bs-table-hover-bg: rgba(0, 0, 0, 0.1);
+}
+
+.post {
+    background-color: var(--light-1-inter);
+}
+
+.first-post {
+
 }
