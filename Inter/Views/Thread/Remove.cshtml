@@ -1,18 +1,30 @@
 ﻿@model Thread
 
 @{
-    ViewBag.Title = "Удаление";
+    ViewBag.Title = "Удаление треда";
     Layout = "_Layout";
 }
 
-<h1 class="display-3">@ViewBag.Title</h1>
-
-<div>
-    <div>Вы действительно хотите удалить тред "@Model.Name"?</div>
-    <form asp-action="Remove" method="post">
+<h1 class="display-3 text-center">@ViewBag.Title</h1>
+<div class="row justify-content-center">
+    <div class="col-auto">Вы действительно хотите удалить тред</div>
+    <div class="w-100"></div>
+    <div class="col-auto mb-2">"@Model.Name"?</div>
+    <div class="w-100"></div>
+    @if (AccountHelper.GetAccessIndex(Context.User, RoleName.Admin) == 0)
+    {
+        <form class="col-auto" asp-action="ForcedRemove" method="post" enctype="multipart/form-data">
+            <input asp-for="BoardId" type="hidden" name="boardId"/>
+            <input asp-for="Id" type="hidden" name="id"/>
+            <input class="btn" type="submit" value="Удалить навсегда"/>
+        </form>
+    }
+    <form class="col-auto" asp-action="Remove" method="post" enctype="multipart/form-data">
         <input asp-for="BoardId" type="hidden" name="boardId" />
         <input asp-for="Id" type="hidden" name="id" />
-        <input type="submit" value="Удалить" />
-        <a asp-action="ViewList" asp-route-boardId="@Model.BoardId">Отмена</a>
+        <input class="btn" type="submit" value="Удалить"/>
     </form>
+    <div class="col-auto">
+        <a class="btn" asp-action="ViewList" asp-route-boardId="@Model.BoardId">Отмена</a>
+    </div>
 </div>

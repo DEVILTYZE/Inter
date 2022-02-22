@@ -38,4 +38,30 @@ namespace Inter.Models
         [HiddenInput]
         public bool IsDeleted { get; set; }
     }
+
+    public class ThreadView
+    {
+        [HiddenInput]
+        public string Id { get; set; }
+        
+        [Display(Name = "Название")]
+        public string Name { get; set; }
+
+        [HiddenInput]
+        public List<PostView> Posts { get; set; }
+        
+        [Display(Name = "Закреплён")]
+        public bool IsPinned { get; set; }
+
+        [HiddenInput]
+        public string BoardId { get; set; }
+
+        public ThreadView(Thread thread)
+        {
+            Id = thread.Id;
+            Name = thread.Name;
+            IsPinned = thread.IsPinned;
+            BoardId = thread.BoardId;
+        }
+    }
 }

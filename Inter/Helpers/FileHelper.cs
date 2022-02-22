@@ -5,7 +5,6 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Inter.Models;
 using Microsoft.AspNetCore.Hosting;
@@ -19,10 +18,6 @@ namespace Inter.Helpers
         private const int MaxNormalAvatarSize = 350;
         private const int MaxNormalPreviewPicSize = 250;
 
-        // РЕШИТЬ ПРОБЛЕМУ С МЕЛКИМИ КАРТИНКАМИ (ГОТОВО)
-        // РЕШИТЬ ПРОБЛЕМУ С ФАЙЛАМИ (ГОТОВО)
-        // РЕШИТЬ ПРОБЛЕМУ С ОТОБРАЖЕНИЕМ ПОСТОВ
-        
         public static async Task SaveFileAsync(IFormFile formFile, string path, IWebHostEnvironment environment)
         {
             if (IsImage(formFile.FileName))
@@ -178,12 +173,13 @@ namespace Inter.Helpers
             }
         }
 
-        public static string GetNewFileName(IFormFile file)
+        public static string GetNewFileName(IFormFile file, string size = "")
         {
             var time = DateTime.Now;
             var fileInfo = new FileInfo(file.FileName);
 
-            return GenerateRandomWord() + time.Hour + time.Minute + time.Second + time.Millisecond + fileInfo.Extension;
+            return TextHelper.GenerateRandomWord() + time.Hour + time.Minute + time.Second + time.Millisecond + size +
+                   fileInfo.Extension;
         }
         
         public static bool IsImage(string filePath)
@@ -200,7 +196,7 @@ namespace Inter.Helpers
 
         private static Bitmap CompressImage(Image image, double neededMaxHeight)
         {
-            var compressionRatio = image.Height / neededMaxHeight;
+            var compressionRatio = (image.Height > image.Width ? image.Width : image.Height) / neededMaxHeight;
             var height = Convert.ToInt32(image.Height / compressionRatio);
             var width = Convert.ToInt32(image.Width / compressionRatio);
 
@@ -234,19 +230,6 @@ namespace Inter.Helpers
             var rect = new Rectangle(point, size);
 
             return pic.Clone(rect, pic.PixelFormat);
-        }
-
-        private static string GenerateRandomWord()
-        {
-            const int length = 8;
-            
-            var random = new Random();
-            var sb = new StringBuilder();
-
-            for (var i = 0; i < length; ++i)
-                sb.Append((char)('a' + random.Next(0, 26)));
-
-            return sb.ToString();
         }
     }
 }

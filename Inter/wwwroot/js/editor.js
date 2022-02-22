@@ -1,6 +1,7 @@
 ﻿
 const owpBtn = document.getElementById('owp-btn');
 const btnSubmit = document.getElementById('btnSubmit');
+const buttons = document.getElementById('owp-main-panel').getElementsByClassName('btn-svg');
 
 let isThreadFormReady = false;
 
@@ -10,7 +11,38 @@ let isThreadFormReady = false;
     window.addEventListener(eventName, changePostPanelHeight, false);
 });
 
-owpBtn.addEventListener('click',  function () {
+document.addEventListener('DOMContentLoaded', () => {
+    const notExpandLength = 2000;
+    let postTexts = document.getElementsByName('post-text');
+    
+    for (let i = 0; i < postTexts.length; ++i) {
+        
+        if (postTexts[i].innerText.length > notExpandLength) {
+            let btn = document.createElement('button');
+            btn.classList.add('expand-link-inter', 'mt-2');
+            btn.innerText = 'Раскрыть текст';
+            
+            let div = document.createElement('div');
+            div.style.display = 'none';
+            div.innerText = postTexts[i].innerText;
+            
+            postTexts[i].innerText = postTexts[i].innerText.slice(0, notExpandLength - 3) + '... ';
+            postTexts[i].parentElement.append(btn);
+            btn.addEventListener('click', function () {
+                if (btn.innerText === 'Раскрыть текст') {
+                    btn.innerText = 'Скрыть текст';
+                    postTexts[i].innerText = div.innerText;
+                } else {
+                    btn.innerText = 'Раскрыть текст';
+                    div.innerText = postTexts[i].innerText;
+                    postTexts[i].innerText = postTexts[i].innerText.slice(0, notExpandLength - 3) + '... ';
+                }
+            }, false);
+        }
+    }
+}, false);
+
+owpBtn.addEventListener('click',  () => {
     const createThreadString = 'Создать тред';
     const closePanelString = 'Закрыть панель';
     const owpTranslate = document.getElementById('owp-main-panel');
@@ -31,13 +63,11 @@ function changePostPanelHeight() {
 
 function changeMaxHeight() {
     let coef = 1;
-    const editorMaxHeight = Number(config['EditorMaxHeight']);
-    //const editorMaxHeight = 0.65;
     
     if (document.documentElement.clientHeight > document.documentElement.clientWidth)
         coef = 1.5;
     
-    let height = document.documentElement.clientHeight * editorMaxHeight / coef;
+    let height = document.documentElement.clientHeight * 0.65 / coef;
     let root = document.documentElement;
     root.style.setProperty('--max-height-inter', ' ' + height + 'px');
 }
@@ -45,8 +75,8 @@ function changeMaxHeight() {
 function changePostView() {
     let height = document.documentElement.clientHeight;
     let width = document.documentElement.clientWidth;
-    const postText = document.getElementById('post-text');
-    const postMedia = document.getElementById('post-media');
+    const postText = document.getElementById('post-text-editor');
+    const postMedia = document.getElementById('post-media-editor');
     const loginInputs = document.getElementsByName('login-input');
 
     if (height > width) {
@@ -81,28 +111,30 @@ function changePostView() {
 }
 
 if (btnSubmit !== null && btnSubmit !== undefined) {
-    const maxTextLength = Number(config['MaxTextLength']);
-    //const maxTextLength = 35000;
-    const className = "text-danger-inter"
-    const postText = document.getElementById('post-text');
-    const textArea = postText.getElementsByTagName('textarea')[0];
+    const className = "text-danger-inter";
     const textLengthCounter = document.getElementById('text-length-counter');
+    const postText = document.getElementById('post-text-editor');
+    const textArea = postText.getElementsByTagName('textarea')[0];
 
     if (textArea.value.length === 0) {
         setStatusThreadButton(true);
     }
 
-    textArea.addEventListener('input', function () {
-        textLengthCounter.innerText = (maxTextLength - textArea.value.length).toString();
-    }, false);
+    textArea.addEventListener('input', () => { changeCounterOfLastLetters(textArea) } , false);
 
     textArea.addEventListener('input',
         function (event) {
             if (event.currentTarget.value.length === 0) {
+                if (textLengthCounter.classList.contains(className)) {
+                    textLengthCounter.classList.add(className);
+                }
+                
                 isThreadFormReady = false;
                 setStatusThreadButton(true);
             } else if (Number(textLengthCounter.innerText) < 0) {
                 textLengthCounter.classList.add(className);
+                isThreadFormReady = false;
+                setStatusThreadButton(true);
             } else {
                 textLengthCounter.classList.remove(className);
                 isThreadFormReady = true;
@@ -119,3 +151,27 @@ function setStatusThreadButton(isDisable = false) {
     }
 }
 
+function changeCounterOfLastLetters(textArea) {
+    const textLengthCounter = document.getElementById('text-length-counter');
+    const maxTextLength = Number(config['MaxTextLength']);
+    textLengthCounter.innerText = (maxTextLength - textArea.value.length).toString();
+}
+
+if (buttons.length > 0) {
+    const postText = document.getElementById('post-text-editor');
+    const textArea = postText.getElementsByTagName('textarea')[0];
+    
+    for (let i = 0; i < buttons.length; ++i) {
+
+        buttons[i].addEventListener('click', () => {
+            let tags = buttons[i].getAttribute('value').split(' ');
+            let indexes = [textArea.selectionStart, textArea.selectionEnd];
+
+            textArea.value = textArea.value.slice(0, indexes[0]) + tags[0] + textArea.value.slice(indexes[0], indexes[1]) 
+                + tags[1] + textArea.value.slice(indexes[1]);
+            textArea.focus();
+            
+            changeCounterOfLastLetters(textArea);
+        }, false);
+    }
+}

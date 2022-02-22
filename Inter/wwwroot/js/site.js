@@ -5,7 +5,7 @@
 
 let config;
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', () => {
     let requestUrl = "/Forum/GetConfig";
     let request = new XMLHttpRequest();
     
@@ -13,13 +13,11 @@ document.addEventListener('DOMContentLoaded', function () {
     request.responseType = "json";
     request.send();
     
-    request.addEventListener('load', function () {
-        config = JSON.parse(request.response);
-    }, false);
+    request.addEventListener('load', () => { config = JSON.parse(request.response); }, false);
 }, false);
 
-document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('textarea, input').forEach(function (element) {
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('textarea, input').forEach((element) => {
         let value = sessionStorage[element.localName];
         let elementValue = element.getAttribute('value');
 
@@ -27,17 +25,13 @@ document.addEventListener('DOMContentLoaded', function () {
             elementValue = value;
         }
 
-        element.addEventListener('input', function () {
-            value = elementValue;
-        }, false);
+        element.addEventListener('input', () => { value = elementValue; }, false);
     });
 }, false);
 
 function changeTheme() {
     const darkName = config['DarkThemeName'];
     const lightName = config['LightThemeName'];
-    //const darkName = 'dark';
-    //const lightName = 'light';
     let btnTheme = document.getElementById('theme-button');
     let theme = btnTheme.value;
     
@@ -69,9 +63,7 @@ function ajaxLoadTheme(theme) {
         type: "POST",
         data: {theme: theme},
         dataType: "text",
-        success: function (result) {
-            console.log("Theme status: " + result);
-        }
+        success: (result) => { console.log("Theme status: " + result); }
     });
 }
 
@@ -103,7 +95,7 @@ function getCoords(element) {
 let searchInput = document.getElementById('searchPattern');
 
 if (searchInput !== null && searchInput !== undefined) {
-    searchInput.addEventListener('keyup', function (event) {
+    searchInput.addEventListener('keyup', (event) => {
         submitSearchForm(event);
     }, false);
 }
@@ -117,3 +109,5 @@ function submitSearchForm(event) {
         }
     }
 }
+
+const texts = document.getElementsByName('post-text');

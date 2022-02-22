@@ -1,24 +1,85 @@
-﻿@model IEnumerable<Post>
+﻿@model IEnumerable<PostView>
 
 @{
     ViewBag.Title = ViewBag.ThreadName;
     Layout = "_Layout";
+    
+    var pathHelper = new PathHelper(Url);
 }
 
-<h1 class="display-3">@ViewBag.Title</h1>
-<div><a asp-action="Create" asp-route-boardId="@ViewBag.BoardId" asp-route-threadId="@ViewBag.ThreadId">Создать</a></div>
-<div>
-    @foreach (var post in Model)
-    {
-        <div>
-            @post.Text
-        </div>
-        if (string.CompareOrdinal(post.Id, "0") != 0)
-        {
-            <div>
-                <a asp-action="Remove" asp-route-boardId="@ViewBag.BoardId" asp-route-threadId="@ViewBag.ThreadId"
-                   asp-route-id="@post.Id" method="get">Удалить</a>
+<h1 class="display-3 text-md-end text-center">@ViewBag.Title</h1>
+@foreach(var post in Model)
+{
+    var isFirstPost = string.CompareOrdinal(post.Id, "0") == 0;
+    var className = isFirstPost ? "first-post" : "post shadow";
+    var column = isFirstPost ? "12" : "auto";
+
+    <div class="row">
+        <div class="col col-lg-@column">
+            <div class="container-lg @className rounded pt-2 pb-2 mb-2">
+                <div class="row align-items-center mb-2">
+                    <div class="col-auto">
+                        <a asp-action="Info" asp-controller="Account" asp-route-id="@post.Poster.Id">
+                            <img src="@pathHelper.GetCompressedFilePath(post.Poster)" alt="Аватар" 
+                                 class="d-inline-block rounded-circle" />
+                        </a>
+                    </div>
+                    <div class="col-auto">
+                        <a class="link-inter" asp-action="Info" asp-controller="Account" asp-route-id="@post.Poster.Id">
+                            @post.Poster.Name
+                        </a>
+                    </div>
+                    <div class="col-auto">
+                        @post.CreationTime.ToString(ConstHelper.DateFormat)
+                    </div>
+                </div>
+                @switch (post.FileNames.Count)
+                {
+                    case > 1:
+                    {
+                        <div class="row mb-2">
+                            @for (var i = 0; i < post.FileNames.Count; ++i)
+                            {
+                                <div class="col-md-3" name="media">
+                                    <img src="@post.CompressedPaths[i]" alt="@post.FileNames[i]" class="img-fluid"/>
+                                    <input type="hidden" value="@post.Paths[i]" />
+                                </div>
+                            }
+                        </div>
+                        <div class="row">
+                            <div name="post-text" class="col-12 text-break">
+                                @post.Text
+                            </div>
+                        </div>
+
+                        break;
+                    }
+                    case 1:
+                    {
+                        <div class="row">
+                            <div class="col-md-3" name="media">
+                                <img src="@post.CompressedPaths[0]" alt="@post.FileNames[0]" class="img-fluid"/>
+                                <input type="hidden" value="@post.Paths[0]" />
+                            </div>
+                            <div name="post-text" class="col text-break">
+                                @post.Text
+                            </div>
+                        </div>
+
+                        break;
+                    }
+                    default:
+                    {
+                        <div class="row">
+                            <div name="post-text" class="col-12 text-break">
+                                @post.Text
+                            </div>
+                        </div>
+
+                        break;
+                    }
+                }
             </div>
-        }
-    }
-</div>
+        </div>
+    </div>
+}

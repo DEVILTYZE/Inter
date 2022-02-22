@@ -1,118 +1,171 @@
 ﻿/*LIGHT THEME*/
 
 body {
-    background-color: var(--light-0-inter);
-    color: var(--dark-0-inter);
+  background-color: var(--light-0-inter);
+  color: var(--dark-0-inter);
 }
 
 a {
-    color: var(--dark-0-inter);
+  color: var(--dark-0-inter);
 }
 
-.theme-button img {
-    background-color: var(--light-7-inter);
+.btn-svg img {
+  background-color: var(--light-7-inter);
 }
 
-.theme-button img:hover {
-    background-color: var(--light-3-inter);
+.btn-svg img:hover {
+  background-color: var(--light-3-inter);
 }
 
 .link-inter:hover, .nav-link:hover {
-    color: var(--dark-20-inter);
+  color: var(--dark-30-inter);
 }
 
 .nav-link, .navbar-toggler {
-    color: var(--dark-10-inter);
+  color: var(--dark-10-inter);
 }
 
 .navbar, .sidebar {
-    background-color: var(--light-10-inter);
+  background-color: var(--light-10-inter);
 }
 
 .sidebar .col {
-    background-color: var(--light-1-inter);
+  background-color: var(--light-1-inter);
 }
 
 .btn {
-    background-color: var(--light-7-inter);
-    color: var(--dark-0-inter);
+  background-color: var(--light-7-inter);
+  color: var(--dark-0-inter);
 }
 
 .btn:hover {
-    color: var(--dark-30-inter);
+  color: var(--dark-30-inter);
 }
 
 .form-control, .form-floating .form-control, .form-select {
-    background-color: var(--light-1-inter);
-    color: var(--dark-0-inter);
-    border-color: var(--light-1-inter);
+  background-color: var(--light-1-inter);
+  color: var(--dark-0-inter);
+  border-color: var(--light-1-inter);
 }
 
 .dropdown-menu, .btn.dropdown-toggle {
-    background-color: var(--light-5-inter);
-    color: var(--dark-0-inter);
+  background-color: var(--light-5-inter);
+  color: var(--dark-0-inter);
 }
 
 .dropdown-menu .dropdown-item {
-    color: var(--dark-0-inter);
+  color: var(--dark-0-inter);
 }
 
 .dropdown-menu .dropdown-item:hover {
-    background-color: var(--light-10-inter);
+  background-color: var(--light-10-inter);
 }
 
 .page-item .page-link {
-    background-color: var(--light-7-inter);
-    color: var(--dark-0-inter);
-    border-color: var(--light-3-inter);
+  background-color: var(--light-7-inter);
+  color: var(--dark-0-inter);
+  border-color: var(--light-3-inter);
+}
+
+.page-item .page-link:hover {
+  background-color: var(--light-3-inter);
+  transition: 0.2s;
 }
 
 .page-item.disabled .page-link {
-    background-color: var(--light-3-inter);
-    color: var(--dark-20-inter);
-    border-color: var(--light-1-inter);
+  background-color: var(--light-3-inter);
+  color: var(--dark-20-inter);
+  border-color: var(--light-1-inter);
 }
 
 .owp-btn, .owp-form {
-    background-color: var(--light-10-inter);
+  background-color: var(--light-10-inter);
 }
 
 .owp-btn:hover {
-    background-color: var(--light-7-inter);
+  background-color: var(--light-7-inter);
 }
 
 .drag-and-drop-field {
-    background-color: var(--light-7-inter);
-    color: var(--dark-0-inter);
+  background-color: var(--light-7-inter);
+  color: var(--dark-0-inter);
 }
 
 .drag-and-drop-highlight {
-    background-color: var(--light-3-inter);
-    color: var(--dark-0-inter);
+  background-color: var(--light-3-inter);
+  color: var(--dark-0-inter);
 }
 
 .board {
-    background-color: var(--light-3-inter);
+  background-color: var(--light-3-inter);
 }
 
 .thread {
-    border-bottom: 1px solid var(--light-7-inter);
+  border-bottom: 1px solid var(--light-7-inter);
 }
 
 .table {
-    background-color: var(--light-1-inter);
-    color: var(--dark-0-inter);
-    border-color: var(--dark-0-inter);
-    --bs-table-striped-color: var(--dark-10-inter);
-    --bs-table-hover-color: var(--dark-0-inter);
-    --bs-table-striped-bg: rgba(0, 0, 0, 0.05);
-    --bs-table-hover-bg: rgba(0, 0, 0, 0.1);
+  background-color: var(--light-1-inter);
+  color: var(--dark-0-inter);
+  border-color: var(--dark-0-inter);
+  --bs-table-striped-color: var(--dark-10-inter);
+  --bs-table-hover-color: var(--dark-0-inter);
+  --bs-table-striped-bg: rgba(0, 0, 0, 0.05);
+  --bs-table-hover-bg: rgba(0, 0, 0, 0.1);
 }
 
 .post {
-    background-color: var(--light-1-inter);
+  background-color: var(--light-1-inter);
 }
 
 .first-post {
 
+}
+
+.expand-link-inter {
+  color: var(--dark-0-inter);
+  border-color: var(--dark-0-inter);
+}
+
+.expand-link-inter:hover {
+  color: var(--dark-20-inter);
+  border-color: var(--dark-20-inter);
+}
+
+.spoiler-inter {
+  background-color: var(--light-20-inter);
+  color: var(--light-20-inter);
+}
+
+.media-viewer-button.left, .media-viewer-button.right {
+  background-color: var(--light-10-inter);
+  color: var(--dark-0-inter);
+}
+
+.media-viewer-button.left:hover, .media-viewer-button.right:hover {
+  background-color: var(--light-7-inter);
+}
+
+.modal-content {
+  background-color: var(--light-0-inter);
+  color: var(--dark-0-inter);
+}
+
+.modal-header, .modal-footer {
+  border-bottom-color: var(--dark-0-inter);
+}
+
+.modal-header {
+  border-bottom-color: var(--dark-0-inter);
+}
+
+.modal-footer {
+  border-top-color: var(--dark-0-inter);
+}
+
+input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus,
+textarea:-webkit-autofill, textarea:-webkit-autofill:hover, textarea:-webkit-autofill:focus,
+select:-webkit-autofill, select:-webkit-autofill:hover, select:-webkit-autofill:focus {
+  -webkit-box-shadow: inset 0 0 0 50px var(--light-0-inter) !important;
+  -webkit-text-fill-color: var(--dark-10-inter) !important;
 }

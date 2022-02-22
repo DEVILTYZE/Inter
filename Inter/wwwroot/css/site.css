@@ -7,19 +7,6 @@ a.navbar-brand {
   word-break: break-all;
 }
 
-/* Sticky footer styles
--------------------------------------------------- */
-html {
-  font-size: 14px;
-}
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-/* Sticky footer styles
--------------------------------------------------- */
 html {
   position: relative;
   min-height: 100px;
@@ -78,7 +65,7 @@ body {
 
 /* INTER */
 
-.theme-button {
+.btn-svg {
   align-items: center;
   background-color: transparent;
   border: none;
@@ -87,7 +74,7 @@ body {
   padding: 0;
 }
 
-.theme-button img {
+.btn-svg img {
   height: inherit;
   width: inherit;
   transition: 0.2s;
@@ -140,6 +127,11 @@ body {
 
 #owp-main-panel {
   transition: 0.6s;
+  pointer-events: none;
+}
+
+#owp-btn, .owp-form {
+  pointer-events: auto;
 }
 
 .owp-translate {
@@ -173,21 +165,95 @@ body {
   display: flex;
   flex-direction: column;
   position: fixed;
-  z-index: 1;
+  z-index: 1021;
   padding: 0 5px 5px;
   background-color: var(--black-inter);
-  text-align: center;
+  height: auto;
+}
+
+.media-viewer img {
+  max-width: 100%;
+}
+
+.media-viewer:before {
+  content: attr(media-info);
   color: var(--light-0-inter);
+  font-size: 1em;
+  /*position: absolute;*/
+  width: 100%;
+  left: 0;
+  text-align: center;
+  cursor: move;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.media-viewer-button {
+  position: fixed;
+  font-size: 2.5em;
+  text-align: center;
+  z-index: 1021;
+  top: calc(50% - 75px);
+  height: 75px;
+  width: 60px;
+  padding: 10px;
+  border: none;
+}
+
+.media-viewer-button.left {
+  left: 0;
+  border-radius: 0 10px 10px 0;
+}
+
+.media-viewer-button.right {
+  right: 0;
+  border-radius: 10px 0 0 10px;
+}
+
+.media-viewer-button.left:hover, .media-viewer-button.right:hover {
+  transition: 0.3s;
 }
 
 .media-viewer-mobile {
-  z-index: 1;
+  z-index: 1031;
   position: fixed;
-  opacity: .6;
-  background-color: var(--black-inter);
+  left: 0;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.7);
   color: var(--light-0-inter);
+}
+
+.media-viewer-mobile img {
+  position: absolute;
+  background-color: transparent;
 }
 
 div[name = "media"] img {
     cursor: pointer;
+}
+
+.expand-link-inter {
+  background-color: transparent;
+  border: 1px solid;
+  height: auto;
+  width: auto;
+  transition: 0.2s;
+}
+
+.underline-inter {
+  text-decoration: underline;
+}
+
+.through-line-inter {
+  text-decoration: line-through;
+}
+
+.spoiler-inter {
+  transition: 0.2s;
+}
+
+.spoiler-inter:hover {
+  background-color: transparent;
+  color: inherit;
 }

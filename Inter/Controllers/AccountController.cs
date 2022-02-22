@@ -16,32 +16,40 @@ using MongoDB.Driver;
 
 namespace Inter.Controllers
 {
-    public class AccountController : Controller
+    public class AccountController : BaseController
     {
-        private readonly InterService _db;
-        private readonly AuditHelper _audit;
-        private readonly FilterDefinitionBuilder<User> _builder;
-        private readonly FilterDefinitionBuilder<Role> _builderRole;
-        private readonly IWebHostEnvironment _environment;
+        // private readonly InterService _db;
+        // private readonly AuditHelper _audit;
+        // private readonly FilterDefinitionBuilder<User> _builder;
+        // private readonly FilterDefinitionBuilder<Role> _builderRole;
+        // private readonly IWebHostEnvironment _environment;
+        //
+        // public AccountController(IWebHostEnvironment environment)
+        // {
+        //     _db = new InterService();
+        //     _audit = new AuditHelper(_db);
+        //     _builder = new FilterDefinitionBuilder<User>();
+        //     _builderRole = new FilterDefinitionBuilder<Role>();
+        //     _environment = environment;
+        //     _bannedRole = _db.Roles.Find(_builderRole.Eq("Name", RoleName.Banned)).FirstOrDefault();
+        // }
+        
         private readonly Role _bannedRole;
+        private readonly FilterDefinitionBuilder<User> _builderUser;
 
-        public AccountController(IWebHostEnvironment environment)
+        public AccountController(IWebHostEnvironment environment) : base(environment)
         {
-            _db = new InterService();
-            _audit = new AuditHelper(_db);
-            _builder = new FilterDefinitionBuilder<User>();
-            _builderRole = new FilterDefinitionBuilder<Role>();
-            _environment = environment;
-            _bannedRole = _db.Roles.Find(_builderRole.Eq("Name", RoleName.Banned)).FirstOrDefault();
+            _builderUser = new FilterDefinitionBuilder<User>();
+            _bannedRole = Db.Roles.Find(BuilderRole.Eq("Name", RoleName.Banned)).FirstOrDefault();
         }
         
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> ViewList()
         {
-            await _audit.AddAsync(typeof(User), MethodType.Look, ResultType.Success, AccountHelper.GetIpAddress(HttpContext), 
-                await GetCurrentUserAsync());
-            return View(await _db.Users.Find(_builder.Empty).ToListAsync());
+            await Audit.AddAsync(typeof(User), MethodType.Look, ResultType.Success, AccountHelper.GetIpAddress(HttpContext), 
+                await AccountHelper.GetCurrentUserAsync(HttpContext, Db));
+            return View(await Db.Users.Find(_builderUser.Empty).ToListAsync());
         }
 
         [HttpGet]
@@ -49,9 +57,9 @@ namespace Inter.Controllers
         public async Task<IActionResult> Info(string id = null)
         {
             if (id is null)
-                return View(await GetCurrentUserAsync());
+                return View(await AccountHelper.GetCurrentUserAsync(HttpContext, Db));
 
-            var user = await _db.Users.Find(_builder.Eq("_id", new ObjectId(id))).FirstOrDefaultAsync();
+            var user = await Db.Users.Find(_builderUser.Eq("_id", new ObjectId(id))).FirstOrDefaultAsync();
             
             return user is null ? RedirectToAction("ViewList", "Account") : View(user);
         }
@@ -72,8 +80,8 @@ namespace Inter.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var user = await _db.Users.Find(_builder.Or(_builder.Eq("Name", 
-                    model.EmailOrName), _builder.Eq("Email", model.EmailOrName))).FirstOrDefaultAsync();
+            var user = await Db.Users.Find(_builderUser.Or(_builderUser.Eq("Name", 
+                    model.EmailOrName), _builderUser.Eq("Email", model.EmailOrName))).FirstOrDefaultAsync();
 
             if (user is null)
             {
@@ -93,13 +101,13 @@ namespace Inter.Controllers
             {
                 ModelState.AddModelError("", ConstError.WrongEmailOrPassword);
                 
-                await _audit.AddAsync(typeof(Login), MethodType.LogIn, ResultType.Failure, AccountHelper.GetIpAddress(HttpContext),
+                await Audit.AddAsync(typeof(Login), MethodType.LogIn, ResultType.Failure, AccountHelper.GetIpAddress(HttpContext),
                     null, $"USER_ID: {user.Id}");
                 return View(model);
             }
 
             await AuthenticateAsync(user);
-            await _audit.AddAsync(typeof(User), MethodType.LogIn, ResultType.Success, AccountHelper.GetIpAddress(HttpContext),
+            await Audit.AddAsync(typeof(User), MethodType.LogIn, ResultType.Success, AccountHelper.GetIpAddress(HttpContext),
                 user, $"USER_ID: {user.Id}");
             return Redirect(returnUrl);
         }
@@ -121,7 +129,7 @@ namespace Inter.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var user = await _db.Users.Find(_builder.Eq("Email", model.Email)).FirstOrDefaultAsync();
+            var user = await Db.Users.Find(_builderUser.Eq("Email", model.Email)).FirstOrDefaultAsync();
                        
             if (user is not null)
             {
@@ -130,7 +138,7 @@ namespace Inter.Controllers
                 return View(model);
             }
             
-            user = await _db.Users.Find(_builder.Eq("Name", model.Name)).FirstOrDefaultAsync();
+            user = await Db.Users.Find(_builderUser.Eq("Name", model.Name)).FirstOrDefaultAsync();
 
             if (user is not null)
             {
@@ -145,19 +153,19 @@ namespace Inter.Controllers
                 Email = model.Email,
                 IsEmailHidden = true,
                 Password = AccountHelper.GetHashedPassword(model.Password, model.Email),
-                Role = await _db.Roles.Find(_builderRole.Eq("Name", RoleName.User)).FirstOrDefaultAsync()
+                Role = await Db.Roles.Find(BuilderRole.Eq("Name", RoleName.User)).FirstOrDefaultAsync()
             };
             
-            await _db.Users.InsertOneAsync(newUser);
+            await Db.Users.InsertOneAsync(newUser);
             await AuthenticateAsync(newUser);
-            await _audit.AddAsync(typeof(User), MethodType.Create, ResultType.Success, AccountHelper.GetIpAddress(HttpContext),
+            await Audit.AddAsync(typeof(User), MethodType.Create, ResultType.Success, AccountHelper.GetIpAddress(HttpContext),
                 newUser, $"USER_ID: {newUser.Id}");
             return RedirectToAction(nameof(Info));
         }
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Edit() => View(await GetCurrentUserAsync());
+        public async Task<IActionResult> Edit() => View(await AccountHelper.GetCurrentUserAsync(HttpContext, Db));
 
         [HttpPost]
         [Authorize]
@@ -167,8 +175,8 @@ namespace Inter.Controllers
             if (!ModelState.IsValid)
                 return View(user);
 
-            var currentUser = await GetCurrentUserAsync();
-            var sameUsers = await _db.Users.Find(_builder.Eq("Email", user.Email)).ToListAsync();
+            var currentUser = await AccountHelper.GetCurrentUserAsync(HttpContext, Db);
+            var sameUsers = await Db.Users.Find(_builderUser.Eq("Email", user.Email)).ToListAsync();
             
             if (sameUsers.Count > 1 && sameUsers.Any(thisUser => string.CompareOrdinal(thisUser.Id, currentUser.Id) != 0))
             {
@@ -177,7 +185,7 @@ namespace Inter.Controllers
                 return View(user);
             }
             
-            sameUsers = await _db.Users.Find(_builder.Eq("Name", user.Name)).ToListAsync();
+            sameUsers = await Db.Users.Find(_builderUser.Eq("Name", user.Name)).ToListAsync();
 
             if (sameUsers.Count > 1 && sameUsers.Any(thisUser => string.CompareOrdinal(thisUser.Id, currentUser.Id) != 0))
             {
@@ -194,16 +202,16 @@ namespace Inter.Controllers
             user.Role = currentUser.Role;
             
             if (!string.IsNullOrEmpty(filePathInput) && !string.IsNullOrWhiteSpace(filePathInput))
-                FileHelper.UpdateFilePathsUser(filePathInput, user, _environment);
+                FileHelper.UpdateFilePathsUser(filePathInput, user, Environment);
 
             // POST
             
-            var filter = _builder.Eq("_id", new ObjectId(user.Id));
+            var filter = _builderUser.Eq("_id", new ObjectId(user.Id));
             var options = new ReplaceOptions { IsUpsert = true };
             
-            await _db.Users.ReplaceOneAsync(filter, user, options);
+            await Db.Users.ReplaceOneAsync(filter, user, options);
             await AuthenticateAsync(user);
-            await _audit.AddAsync(typeof(User), MethodType.Edit, ResultType.Success, AccountHelper.GetIpAddress(HttpContext),
+            await Audit.AddAsync(typeof(User), MethodType.Edit, ResultType.Success, AccountHelper.GetIpAddress(HttpContext),
                 user, $"ID: {user.Id}");
             return RedirectToAction(nameof(Edit));
         }
@@ -220,24 +228,24 @@ namespace Inter.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var user = await GetCurrentUserAsync();
+            var user = await AccountHelper.GetCurrentUserAsync(HttpContext, Db);
             
             if (CheckPassword(model.CurrentPassword, user))
             {
                 user.Password = AccountHelper.GetHashedPassword(model.NewPassword, user.Email);
-                var filter = _builder.Eq("_id", new ObjectId(user.Id));
+                var filter = _builderUser.Eq("_id", new ObjectId(user.Id));
                 var options = new ReplaceOptions { IsUpsert = true };
             
-                await _db.Users.ReplaceOneAsync(filter, user, options);
+                await Db.Users.ReplaceOneAsync(filter, user, options);
                 await AuthenticateAsync(user);
-                await _audit.AddAsync(typeof(ChangePassword), MethodType.Edit, ResultType.Success, 
+                await Audit.AddAsync(typeof(ChangePassword), MethodType.Edit, ResultType.Success, 
                     AccountHelper.GetIpAddress(HttpContext), user, $"USER_ID: {user.Id}");
                 return RedirectToAction(nameof(Edit));
             }
             
             ModelState.AddModelError("CurrentPassword", ConstError.WrongCurrentPassword);
             
-            await _audit.AddAsync(typeof(ChangePassword), MethodType.Edit, ResultType.Failure, 
+            await Audit.AddAsync(typeof(ChangePassword), MethodType.Edit, ResultType.Failure, 
                 AccountHelper.GetIpAddress(HttpContext), user, $"USER_ID: {user.Id}");
             return View(model);
 
@@ -247,18 +255,18 @@ namespace Inter.Controllers
         [Authorize]
         public async Task<IActionResult> RemoveAvatar()
         {
-            var user = await GetCurrentUserAsync();
+            var user = await AccountHelper.GetCurrentUserAsync(HttpContext, Db);
 
             if (user is null) 
                 return RedirectToAction("Page404", "Forum");
             
             user.AvatarUrl = string.Empty;
-            var filter = _builder.Eq("_id", new ObjectId(user.Id));
+            var filter = _builderUser.Eq("_id", new ObjectId(user.Id));
             var options = new ReplaceOptions { IsUpsert = true };
             
-            await _db.Users.ReplaceOneAsync(filter, user, options);
+            await Db.Users.ReplaceOneAsync(filter, user, options);
             await AuthenticateAsync(user);
-            await _audit.AddAsync(typeof(User), MethodType.Edit, ResultType.Success, 
+            await Audit.AddAsync(typeof(User), MethodType.Edit, ResultType.Success, 
                 AccountHelper.GetIpAddress(HttpContext), user, $"AVATAR | USER_ID: {user.Id}");
             return RedirectToAction(nameof(Edit));
         }
@@ -272,12 +280,12 @@ namespace Inter.Controllers
             
             var file = Request.Form.Files[0];
             var fileName = FileHelper.GetNewFileName(file);
-            var user = await GetCurrentUserAsync();
+            var user = await AccountHelper.GetCurrentUserAsync(HttpContext, Db);
 
             if (user is null)
                 return Json(ConstError.UserError404);
             
-            var path = await FileHelper.SaveAccountImageAsyncOrDefault(file, user.Id, fileName, _environment);
+            var path = await FileHelper.SaveAccountImageAsyncOrDefault(file, user.Id, fileName, Environment);
 
             return Json(path ?? ConstError.FileError404);
         }
@@ -294,7 +302,7 @@ namespace Inter.Controllers
             sb.Append(path + "/normal.jpg ");
             sb.Append(path + "/small.jpg");
 
-            FileHelper.RemoveFiles(sb.ToString().Split(' ').ToList(), _environment);
+            FileHelper.RemoveFiles(sb.ToString().Split(' ').ToList(), Environment);
             
             return Json(ConstError.Success);
         }
@@ -306,7 +314,7 @@ namespace Inter.Controllers
             if (string.IsNullOrEmpty(userId))
                 return RedirectToAction(nameof(ViewList));
 
-            var user = await _db.Users.Find(_builder.Eq("_id", new ObjectId(userId))).FirstOrDefaultAsync();
+            var user = await Db.Users.Find(_builderUser.Eq("_id", new ObjectId(userId))).FirstOrDefaultAsync();
             
             if (user is null)
                 return RedirectToAction(nameof(ViewList));
@@ -340,16 +348,6 @@ namespace Inter.Controllers
                 ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id));
-        }
-
-        private async Task<User> GetCurrentUserAsync()
-        {
-            if (HttpContext.User.Identity is null)
-                throw new Exception("Class: AccountController; Method: GetCurrentUser.");
-            
-            var userName = HttpContext.User.Identity.Name;
-            
-            return await _db.Users.Find(_builder.Regex("Name", new BsonRegularExpression(userName))).FirstAsync();
         }
     }
 }

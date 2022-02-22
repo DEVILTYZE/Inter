@@ -3,5 +3,5 @@
   "MaxTextLength": "35000",
   "LightThemeName": "light",
   "DarkThemeName": "dark",
-  "EditorMaxHeight": "0.65"
+  "MaxLoadPreviewPostCount": "5"
 }

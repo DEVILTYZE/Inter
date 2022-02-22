@@ -18,17 +18,23 @@ namespace Inter.Helpers
         public const string CompressedImageFolderName = "comp_img";
         public const string RandomThreadName = "Безымянный тред";
         public const string MainPageName = "Главная страница";
-        public const string LightThemeName = "light";
-        public const string DarkThemeName = "dark";
 
-        public const string DateFormatSecs = "dd MMMM yyyy HH:mm:ss";
-        public const string DateFormat = "HH:mm dd MMMM yyyy";
-        public const long MaxFileSize = 10485760;
-        public const int MaxTextLength = 35000;
-        public const int MaxNameLength = 50;
+        public const string DateFormatSecs = "dd MMMM yyyy | HH:mm:ss";
+        public const string DateFormat = "HH:mm | dd MMMM yyyy";
+        public const int MaxNameLength = 30;
         public const int MaxFilesCount = 8;
         public const int MaxFileNameLength = 64;
         public const int CountAuditDocumentsPerPage = 500;
+        
+        // config
+        
+        public const long MaxFileSize = 10485760;
+        public const int MaxTextLength = 35000;
+        public const string LightThemeName = "light";
+        public const string DarkThemeName = "dark";
+        public const int MaxLoadThreadCount = 15;
+        public const int MaxLoadPostCount = 25;
+        public const int MaxLoadPreviewPostCount = 5;
     }
 
     public static class ConstError

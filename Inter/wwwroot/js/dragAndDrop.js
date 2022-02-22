@@ -14,7 +14,7 @@ window.addEventListener('beforeunload', unloadFiles, false);
 })
 
 function setButtonEvent() {
-    document.getElementById('btnSubmit').onclick = function () {
+    document.getElementById('btnSubmit').onclick = () => {
         buttonClicked = true;
     }
 }
@@ -30,9 +30,7 @@ function unloadFiles() {
         type: 'POST',
         data: {data: fileString},
         dataType: "text",
-        success: function (result) {
-            console.log(result);
-        }
+        success: (result) => { console.log(result); }
     });
 }
 
@@ -88,7 +86,7 @@ function sendFiles(files) {
         data: formData,
         contentType: false,
         processData: false,
-        success: function(result) { // Result — путь файла, его стоит передать в скрытый инпут, если это возможно
+        success: (result) => {
             document.getElementsByName('filePathInput')[0].setAttribute('value', result);
             previewImages(fileArray);
         }
@@ -129,8 +127,8 @@ function previewImages(files) {
         preview.appendChild(col);
 
         const reader = new FileReader();
-        reader.onload = (function(aImg) {
-            return function(e) {
+        reader.onload = ((aImg) => {
+            return (e) => {
                 aImg.src = e.target.result;
             };
         })(img);

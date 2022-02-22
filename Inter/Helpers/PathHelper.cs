@@ -41,5 +41,8 @@ namespace Inter.Helpers
                 ? _url.Content($"~/files/{defaultPath}")
                 : _url.Content($"~/files/{path[..path.LastIndexOf('/')]}{_avatarSizes[indexOfSize]}");
         }
+
+        public static string GetThreadFolderPath(string boardId, string threadId) 
+            => $"imgbrd/board_{boardId}/thread_{threadId}";
     }
 }

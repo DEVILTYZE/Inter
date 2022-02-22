@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Inter.Helpers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Inter.Models
@@ -9,7 +10,7 @@ namespace Inter.Models
         public string Name { get; set; }
 
         [Display(Name = "Текст поста:")]
-        [StringLength(50000, ErrorMessage = "Размер текста выходит за границы")]
+        [StringLength(ConstHelper.MaxTextLength, ErrorMessage = "Размер текста выходит за границы")]
         public string Text { get; set; }
         
         [Display(Name = "Файлы:")]

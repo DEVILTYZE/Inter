@@ -12,23 +12,25 @@ using MongoDB.Driver;
 
 namespace Inter.Controllers
 {
-    public class PostController : Controller
+    public class PostController : BaseController
     {
-        private readonly InterService _db;
-        private readonly AuditHelper _audit;
-        private readonly FilterDefinitionBuilder<Board> _builder;
-        private readonly FilterDefinitionBuilder<User> _userBuilder;
-        private readonly IWebHostEnvironment _environment;
-        
-        public PostController(IWebHostEnvironment environment)
-        {
-            _db = new InterService();
-            _audit = new AuditHelper(_db);
-            _builder = new FilterDefinitionBuilder<Board>();
-            _userBuilder = new FilterDefinitionBuilder<User>();
-            _environment = environment;
-        }
-        
+        // private readonly InterService _db;
+        // private readonly AuditHelper _audit;
+        // private readonly FilterDefinitionBuilder<Board> _builder;
+        // private readonly FilterDefinitionBuilder<User> _userBuilder;
+        // private readonly IWebHostEnvironment _environment;
+        //
+        // public PostController(IWebHostEnvironment environment)
+        // {
+        //     _db = new InterService();
+        //     _audit = new AuditHelper(_db);
+        //     _builder = new FilterDefinitionBuilder<Board>();
+        //     _userBuilder = new FilterDefinitionBuilder<User>();
+        //     _environment = environment;
+        // }
+
+        public PostController(IWebHostEnvironment environment) : base(environment) {}
+
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> ViewList(string boardId, string threadId)
@@ -39,7 +41,8 @@ namespace Inter.Controllers
             if (threadId is null)
                 return RedirectToAction("ViewList", "Thread", new { boardId });
             
-            var board = await _db.Boards.Find(_builder.Eq("_id", new ObjectId(boardId))).FirstOrDefaultAsync();
+            var boards = await Db.Boards.Find(Builder.Empty).ToListAsync();
+            var board = boards.FirstOrDefault(thisBoard => string.CompareOrdinal(thisBoard.Id, boardId) == 0);
 
             if (board is null)
                 return RedirectToAction("ViewList", "Board");
@@ -49,10 +52,13 @@ namespace Inter.Controllers
             if (thread is null)
                 return RedirectToAction("ViewList", "Thread", new { boardId });
 
-            ViewBag.BoardId = boardId;
-            ViewBag.ThreadId = threadId;
+            var posts = await GetListOfPosts(thread.Posts, thread);
+            
+            // ViewBag.BoardId = boardId;
+            // ViewBag.ThreadId = threadId;
+            ViewBag.Boards = boards;
             ViewBag.ThreadName = thread.Name;
-            return View(thread.Posts);
+            return View(posts);
         }
 
         [HttpGet]
@@ -65,7 +71,7 @@ namespace Inter.Controllers
             if (threadId is null)
                 return RedirectToAction("ViewList", "Thread", new { boardId });
 
-            var user = await GetCurrentUserAsync();
+            var user = await AccountHelper.GetCurrentUserAsync(HttpContext, Db);
 
             ViewBag.UserId = user.Id;
             ViewBag.BoardId = boardId;
@@ -75,12 +81,13 @@ namespace Inter.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Create([Bind("Id", "Text", "ThreadId", "BoardId")] Post post, string posterId)
+        public async Task<IActionResult> Create([Bind("Id", "ThreadId", "BoardId", "PosterId")] Post post, 
+            string text)
         {
             if (!ModelState.IsValid)
                 return View(post);
 
-            var board = await _db.Boards.Find(_builder.Eq("_id", new ObjectId(post.BoardId))).FirstOrDefaultAsync();
+            var board = await Db.Boards.Find(Builder.Eq("_id", new ObjectId(post.BoardId))).FirstOrDefaultAsync();
 
             if (board is null)
                 return RedirectToAction("ViewList", "Board");
@@ -90,11 +97,13 @@ namespace Inter.Controllers
             if (thread is null)
                 return RedirectToAction("ViewList", "Thread", new { post.BoardId });
 
-            var user = await _db.Users.Find(_userBuilder.Eq("_id", new ObjectId(posterId))).FirstOrDefaultAsync();
+            var user = await Db.Users.Find(new FilterDefinitionBuilder<User>().Eq("_id", 
+                new ObjectId(post.PosterId))).FirstOrDefaultAsync();
 
             if (user is null)
                 return RedirectToAction("Page404", "Forum");
 
+            post.Text = HtmlPageHelper.GetHtmlText(TextHelper.EditPostText(text));
             post.Id = thread.Posts.Count > 0 ? (int.Parse(thread.Posts.Last().Id) + 1).ToString() : "0";
             post.FileNames = new List<string>();
             post.CreationTime = DateTime.Now;
@@ -105,7 +114,7 @@ namespace Inter.Controllers
             
             // FILE UPDATE
 
-            await _db.Boards.ReplaceOneAsync(_builder.Eq("_id", new ObjectId(post.BoardId)), board, options);
+            await Db.Boards.ReplaceOneAsync(Builder.Eq("_id", new ObjectId(post.BoardId)), board, options);
             return RedirectToAction("ViewList", "Post", new { boardId = post.BoardId, threadId = post.ThreadId });
         }
 
@@ -122,7 +131,7 @@ namespace Inter.Controllers
             if (id is null || string.CompareOrdinal(id, "0") == 0)
                 return RedirectToAction(nameof(ViewList));
             
-            var board = await _db.Boards.Find(_builder.Eq("_id", new ObjectId(boardId))).FirstOrDefaultAsync();
+            var board = await Db.Boards.Find(Builder.Eq("_id", new ObjectId(boardId))).FirstOrDefaultAsync();
             
             if (board is null)
                 return RedirectToAction("ViewList", "Board");
@@ -145,8 +154,7 @@ namespace Inter.Controllers
             {
                 1 => RedirectToAction("ViewList", "Board"),
                 2 => RedirectToAction("ViewList", "Thread", new { boardId }),
-                3 => RedirectToAction(nameof(ViewList)),
-                _ => RedirectToAction("ViewList", "Post", new { boardId, threadId })
+                _ => RedirectToAction(nameof(ViewList), new { boardId, threadId })
             };
         }
 
@@ -158,15 +166,36 @@ namespace Inter.Controllers
             {
                 1 => RedirectToAction("ViewList", "Board"),
                 2 => RedirectToAction("ViewList", "Thread", new { boardId }),
-                3 => RedirectToAction(nameof(ViewList)),
-                _ => RedirectToAction("ViewList", "Post", new { boardId, threadId })
+                _ => RedirectToAction(nameof(ViewList), new { boardId, threadId })
             };
         }
 
-        public async Task<int> RemoveStatus(string boardId, string threadId, int id, bool isForced = false)
+        private async Task<IEnumerable<PostView>> GetListOfPosts(IEnumerable<Post> posts, Thread thread,
+            IReadOnlyList<string> viewedPostsIds = null)
+        {
+            var users = await Db.Users.Find(new FilterDefinitionBuilder<User>().Empty).ToListAsync();
+            var pathHelper = new PathHelper(Url);
+            var predicate = viewedPostsIds is null
+                ? (Func<Post, bool>)(thisPost => !thisPost.IsDeleted)
+                : thisPost => !thisPost.IsDeleted && !viewedPostsIds.Contains(thisPost.Id);
+            var newPosts = posts
+                .Where(predicate)
+                .Take(ConstHelper.MaxLoadPostCount)
+                .Select(thisPost => new PostView(thisPost, users)
+                {
+                    Paths = thisPost.FileNames.Select(thisFileName => pathHelper.GetFilePath(
+                        thread, thisFileName)).ToList(),
+                    CompressedPaths = thisPost.FileNames.Select(thisFileName => pathHelper
+                        .GetCompressedFilePath(thread, thisFileName)).ToList()
+                }).AsEnumerable();
+
+            return newPosts;
+        }
+        
+        private async Task<int> RemoveStatus(string boardId, string threadId, int id, bool isForced = false)
         {
             var options = new ReplaceOptions { IsUpsert = true };
-            var board = await _db.Boards.Find(_builder.Eq("_id", new ObjectId(boardId))).FirstOrDefaultAsync();
+            var board = await Db.Boards.Find(Builder.Eq("_id", new ObjectId(boardId))).FirstOrDefaultAsync();
 
             if (board is null)
                 return 1;
@@ -181,30 +210,18 @@ namespace Inter.Controllers
             if (post is null)
                 return 3;
             
-            FileHelper.RemoveFiles(post.FileNames, _environment);
+            FileHelper.RemoveFiles(post.FileNames, Environment);
 
             post.IsDeleted = true;
 
             if (isForced)
                 thread.Posts.Remove(post);
 
-            await _db.Boards.ReplaceOneAsync(_builder.Eq("_id", new ObjectId(boardId)), board, options);
-            await _audit.AddAsync(typeof(Post), MethodType.Remove, ResultType.Success, AccountHelper.GetIpAddress(HttpContext), 
-                await GetCurrentUserAsync(), $"ID: {id}, THREAD_ID: {threadId}, BOARD_ID: {boardId}, " +
+            await Db.Boards.ReplaceOneAsync(Builder.Eq("_id", new ObjectId(boardId)), board, options);
+            await Audit.AddAsync(typeof(Post), MethodType.Remove, ResultType.Success, AccountHelper.GetIpAddress(HttpContext), 
+                await AccountHelper.GetCurrentUserAsync(HttpContext, Db), $"ID: {id}, THREAD_ID: {threadId}, BOARD_ID: {boardId}, " +
                 $"TEXT: {post.Text}");
             return 0;
-        }
-
-        private async Task<User> GetCurrentUserAsync()
-        {
-            var builder = new FilterDefinitionBuilder<User>();
-
-            if (HttpContext.User.Identity is null)
-                throw new Exception("Class: AccountController; Method: GetCurrentUser.");
-            
-            var userName = HttpContext.User.Identity.Name;
-            
-            return await _db.Users.Find(builder.Regex("Name", new BsonRegularExpression(userName))).FirstAsync();
         }
     }
 }

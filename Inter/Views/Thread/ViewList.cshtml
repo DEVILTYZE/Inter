@@ -1,23 +1,19 @@
-﻿@model IEnumerable<Thread>
+﻿@model IEnumerable<ThreadView>
 
 @{
     ViewBag.Title = ViewBag.BoardName;
     Layout = "_Layout";
 
-    var isAuthorized = Context.User.Identity is not null && Context.User.Identity.IsAuthenticated;
+    var isAuthorized = AccountHelper.IsAuthorized(Context);
     var accessGranted = AccountHelper.GetAccessIndex(User, RoleName.Moderator) >= 0;
     var returnUrl = Context.Request.Path.Value + Context.Request.QueryString.Value;
     var pathHelper = new PathHelper(Url);
 }
 
 
-<h1 class="display-3 mb-2 text-end">@ViewBag.Title</h1>
+<h1 class="display-3 mb-2 text-md-end text-center">@ViewBag.Title</h1>
 @foreach (var thread in Model)
 {
-    if (AccountHelper.GetAccessIndex(User, thread.ReadRoleName) < 0 && 
-        AccountHelper.GetAccessIndex(thread.ReadRoleName, RoleName.Anon) <= 0)
-        continue;
-
     <div class="container-lg thread mb-2">
         <div class="row mt-2 mb-2">
             <div class="col">
@@ -26,33 +22,71 @@
                     @thread.Name
                 </a>
             </div>
+            @if (isAuthorized && accessGranted)
+            {
+                <div class="col-auto">
+                    <button class="btn" type="button" data-bs-toggle="modal" data-bs-target="#removeModal">
+                        Удалить тред
+                    </button>
+                </div>
+                <div class="modal fade" id="removeModal" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Удаление треда</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                </button>
+                            </div>
+                            <div class="modal-body text-break">
+                                Вы действительно хотите удалить тред:<br>
+                                @thread.Name
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn" data-bs-dismiss="modal">
+                                    Закрыть
+                                </button>
+                                <form asp-action="Remove" method="post" enctype="multipart/form-data">
+                                    <input type="hidden" name="boardId" value="@thread.BoardId" />
+                                    <input type="hidden" name="id" value="@thread.Id" />
+                                    <input type="submit" class="btn" value="Удалить" />
+                                </form>
+                                @if (AccountHelper.GetAccessIndex(Context.User, RoleName.Admin) == 0)
+                                {
+                                    <form asp-action="ForcedRemove" method="post" enctype="multipart/form-data">
+                                        <input type="hidden" name="boardId" value="@thread.BoardId" />
+                                        <input type="hidden" name="id" value="@thread.Id" />
+                                        <input type="submit" class="btn" value="Удалить навсегда" />
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
         <div class="row mb-2">
             @{
-                const int lengthPosts = 5;
-                var posts = thread.Posts.Take(lengthPosts).ToList();
                 var countPost = 1;
-                var className = "first-post";
                 var column = "12";
                 var offset = "0";
 
-                foreach (var post in posts)
+                foreach (var post in thread.Posts)
                 {
-                    var user = (ViewBag.Users as List<User>).Find(thisUser
-                        => string.CompareOrdinal(thisUser.Id, post.PosterId) == 0);
+                    var className = countPost == 1 ? "first-post" : "post shadow";
                     
-                    <div class="col-12 col-lg-@column offset-lg-@offset">
+                    <div class="col col-lg-@column offset-lg-@offset">
                         <div class="container-lg @className rounded pt-2 pb-2 mb-2">
                             <div class="row align-items-center mb-2">
                                 <div class="col-auto">
-                                    <a asp-action="Info" asp-controller="Account" asp-route-id="@post.PosterId">
-                                        <img src="@pathHelper.GetCompressedFilePath(user)" alt="Аватар" 
+                                    <a asp-action="Info" asp-controller="Account" asp-route-id="@post.Poster.Id">
+                                        <img src="@pathHelper.GetCompressedFilePath(post.Poster)" alt="Аватар" 
                                              class="d-inline-block rounded-circle" />
                                     </a>
                                 </div>
                                 <div class="col-auto">
-                                    <a class="link-inter" asp-action="Info" asp-controller="Account" 
-                                       asp-route-id="@post.PosterId">@user.Name</a>
+                                    <a class="link-inter" asp-action="Info" asp-controller="Account" asp-route-id="@post.Poster.Id">
+                                        @post.Poster.Name
+                                    </a>
                                 </div>
                                 <div class="col-auto">
                                     @post.CreationTime.ToString(ConstHelper.DateFormat)
@@ -63,19 +97,16 @@
                                 case > 1:
                                 {
                                     <div class="row mb-2">
-                                        @foreach (var fileName in post.FileNames)
+                                        @for (var i = 0; i < post.FileNames.Count; ++i)
                                         {
-                                            var compressedPath = pathHelper.GetCompressedFilePath(thread, fileName);
-                                            var path = pathHelper.GetFilePath(thread, fileName);
-                                            
                                             <div class="col-md-3" name="media">
-                                                <img src="@compressedPath" alt="@fileName" class="img-fluid"/>
-                                                <input type="hidden" value="@path" />
+                                                <img src="@post.CompressedPaths[i]" alt="@post.FileNames[i]" class="img-fluid"/>
+                                                <input type="hidden" value="@post.Paths[i]" />
                                             </div>
                                         }
                                     </div>
                                     <div class="row">
-                                        <div class="col-12 text-break">
+                                        <div name="post-text" class="col-12 text-break">
                                             @post.Text
                                         </div>
                                     </div>
@@ -84,15 +115,12 @@
                                 }
                                 case 1:
                                 {
-                                    var compressedPath = pathHelper.GetCompressedFilePath(thread, post.FileNames[0]);
-                                    var path = pathHelper.GetFilePath(thread, post.FileNames[0]);
-
                                     <div class="row">
                                         <div class="col-md-3" name="media">
-                                            <img src="@compressedPath" alt="@post.FileNames[0]" class="img-fluid"/>
-                                            <input type="hidden" value="@path" />
+                                            <img src="@post.CompressedPaths[0]" alt="@post.FileNames[0]" class="img-fluid"/>
+                                            <input type="hidden" value="@post.Paths[0]" />
                                         </div>
-                                        <div class="col text-break">
+                                        <div name="post-text" class="col text-break">
                                             @post.Text
                                         </div>
                                     </div>
@@ -102,7 +130,7 @@
                                 default:
                                 {
                                     <div class="row">
-                                        <div class="col-12 text-break">
+                                        <div name="post-text" class="col-12 text-break">
                                             @post.Text
                                         </div>
                                     </div>
@@ -130,7 +158,6 @@
                             break;
                     }
                     
-                    className = "post shadow";
                     ++countPost;
                 }
             }
@@ -140,7 +167,7 @@
 
 <div id="owp-main-panel" class="container-lg fixed-bottom align-self-center owp-translate">
     <div class="row justify-content-center">
-        <div id="owp-btn" class="col-auto rounded-top text-center shadow owp-btn">
+        <div id="owp-btn" class="col-auto rounded-top text-center shadow owp-btn pb-1">
             Создать тред
         </div>
     </div>
@@ -155,15 +182,16 @@
                         <div class="row mt-2 mb-2">
                             <div class="col">
                                 <div class="form-floating">
-                                    <input class="form-control" id="Name" name="Name" placeholder="Название треда" autocomplete="off" />
+                                    <input class="form-control" id="Name" name="Name" maxlength="30" 
+                                           placeholder="Название треда" autocomplete="off" />
                                     <label for="Name">Название треда</label>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
-                            <div id="post-text" class="col-lg-8 col-12 mb-2">
+                            <div id="post-text-editor" class="col-lg-8 col-12 mb-2">
                                 <div class="container p-0">
-                                    <div class="row">
+                                    <div class="row mb-2">
                                         <div class="col">
                                             <div class="form-floating" style="height: 100%">
                                                 <textarea class="form-control" rows="10" type="text" id="Text" name="Text" 
@@ -173,12 +201,12 @@
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col">nothing</div>
-                                        <div id="text-length-counter" class="col-auto">@ConstHelper.MaxTextLength</div>
+                                        <div class="col-auto">@HtmlPageHelper.GetEditorPanel(Url)</div>
+                                        <div id="text-length-counter" class="col-auto ms-auto">@ConstHelper.MaxTextLength</div>
                                     </div>
                                 </div>
                             </div>
-                            <div id="post-media" class="col-lg-4 col-12 mb-2">
+                            <div id="post-media-editor" class="col-lg-4 col-12 mb-2">
                                 @HtmlPageHelper.GetDragAndDropField(Url, true, false)
                             </div>
                         </div>
@@ -266,3 +294,4 @@
 </div>
 <script lang="js" src="@Url.Content("~/js/editor.js")"></script>
 <script lang="js" src="@Url.Content("~/js/mediaViewer.js")"></script>
+<script lang="js" src="@Url.Content("~/js/mediaViewerMobile.js")"></script>

@@ -1,129 +1,173 @@
 ﻿/*DARK THEME*/
 
 body {
-    background-color: var(--dark-20-inter);
-    color: var(--light-0-inter);
+  background-color: var(--dark-20-inter);
+  color: var(--light-0-inter);
 }
 
 a {
-    color: var(--light-3-inter);
+  color: var(--light-3-inter);
 }
 
-.theme-button img {
-    background-color: var(--light-30-inter);
+.btn-svg img {
+  background-color: var(--light-30-inter);
 }
 
-.theme-button img:hover {
-    background-color: var(--light-20-inter);
+.btn-svg img:hover {
+  background-color: var(--light-20-inter);
 }
 
 .link-inter:hover, .nav-link:hover {
-    color: var(--light-0-inter);
+  color: var(--light-0-inter);
 }
 
 .nav-link, .navbar-toggler {
-    color: var(--light-7-inter);
+  color: var(--light-7-inter);
 }
 
 .navbar {
-    background-color: var(--dark-10-inter);
-    color: var(--light-0-inter);
+  background-color: var(--dark-10-inter);
+  color: var(--light-0-inter);
 }
 
 .sidebar {
-    background-color: var(--light-30-inter);
+  background-color: var(--light-30-inter);
 }
 
 .sidebar .col {
-    background-color: var(--light-20-inter);
+  background-color: var(--light-20-inter);
 }
 
 .btn {
-    background-color: var(--light-20-inter);
-    color: var(--light-1-inter);
+  background-color: var(--light-20-inter);
+  color: var(--light-1-inter);
 }
 
 .btn:hover {
-    color: var(--light-0-inter);
+  color: var(--light-0-inter);
 }
 
 .form-control, .form-floating .form-control, .form-select {
-    background-color: var(--light-20-inter);
-    color: var(--light-0-inter);
-    border-color: var(--light-20-inter);
+  background-color: var(--light-20-inter);
+  color: var(--light-0-inter);
+  border-color: var(--light-20-inter);
 }
 
 .dropdown-menu, .btn.dropdown-toggle {
-    background-color: var(--light-30-inter);
-    color: var(--light-0-inter);
+  background-color: var(--light-30-inter);
+  color: var(--light-0-inter);
 }
 
 .dropdown-menu .dropdown-item {
-    color: var(--light-0-inter);
+  color: var(--light-0-inter);
 }
 
 .dropdown-menu .dropdown-item:hover {
-    background-color: var(--light-20-inter);
+  background-color: var(--light-20-inter);
 }
 
 .page-item .page-link {
-    background-color: var(--dark-30-inter);
-    color: var(--light-10-inter);
-    border-color: var(--light-30-inter);
+  background-color: var(--dark-30-inter);
+  color: var(--light-10-inter);
+  border-color: var(--light-30-inter);
 }
 
 .page-item .page-link:hover {
-    background-color: var(--light-10-inter);
-    color: var(--dark-30-inter);
-    border-color: var(--light-7-inter);
+  background-color: var(--light-10-inter);
+  color: var(--dark-30-inter);
+  border-color: var(--light-7-inter);
 }
 
 .page-item.disabled .page-link {
-    background-color: var(--light-30-inter);
-    color: var(--light-0-inter);
-    border-color: var(--light-20-inter);
+  background-color: var(--light-30-inter);
+  color: var(--light-0-inter);
+  border-color: var(--light-20-inter);
 }
 
 .owp-btn, .owp-form {
-    background-color: var(--light-40-inter);
+  background-color: var(--light-40-inter);
 }
 
 .owp-btn:hover {
-    background-color: var(--light-30-inter);
+  background-color: var(--light-30-inter);
 }
 
 .drag-and-drop-field {
-    background-color: var(--light-20-inter);
-    color: var(--light-0-inter);
+  background-color: var(--light-20-inter);
+  color: var(--light-0-inter);
 }
 
 .drag-and-drop-highlight {
-    background-color: var(--light-10-inter);
-    color: var(--dark-0-inter);
+  background-color: var(--light-10-inter);
+  color: var(--dark-0-inter);
 }
 
 .board {
-    background-color: var(--light-30-inter);
+  background-color: var(--light-30-inter);
 }
 
 .thread {
-    border-bottom: 1px solid var(--light-7-inter);
+  border-bottom: 1px solid var(--light-7-inter);
 }
 
 .table {
-    background-color: var(--light-40-inter);
-    color: var(--light-1-inter);
-    border-color: var(--light-7-inter);
-    --bs-table-striped-color: var(--light-3-inter);
-    --bs-table-hover-color: var(--light-0-inter);
-    --bs-table-striped-bg: rgba(0, 0, 0, 0.15);
-    --bs-table-hover-bg: rgba(0, 0, 0, 0.2);
+  background-color: var(--light-40-inter);
+  color: var(--light-1-inter);
+  border-color: var(--light-7-inter);
+  --bs-table-striped-color: var(--light-3-inter);
+  --bs-table-hover-color: var(--light-0-inter);
+  --bs-table-striped-bg: rgba(0, 0, 0, 0.15);
+  --bs-table-hover-bg: rgba(0, 0, 0, 0.2);
 }
 
 .post {
-    background-color: var(--light-20-inter);
+  background-color: var(--light-20-inter);
 }
 
 .first-post {
 
+}
+
+.expand-link-inter {
+  color: var(--light-3-inter);
+  border-color: var(--light-3-inter);
+}
+
+.expand-link-inter:hover {
+  color: var(--light-0-inter);
+  border-color: var(--light-0-inter);
+}
+
+.spoiler-inter {
+  background-color: var(--light-10-inter);
+  color: var(--light-10-inter);
+}
+
+.media-viewer-button.left, .media-viewer-button.right {
+  background-color: var(--light-40-inter);
+  color: var(--light-0-inter);
+}
+
+.media-viewer-button.left:hover, .media-viewer-button.right:hover {
+  background-color: var(--light-30-inter);
+}
+
+.modal-content {
+  background-color: var(--light-30-inter);
+  color: var(--light-0-inter);
+}
+
+.modal-header {
+  border-bottom-color: var(--light-3-inter);
+}
+
+.modal-footer {
+  border-top-color: var(--light-3-inter);
+}
+
+input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus,
+textarea:-webkit-autofill, textarea:-webkit-autofill:hover, textarea:-webkit-autofill:focus,
+select:-webkit-autofill, select:-webkit-autofill:hover, select:-webkit-autofill:focus {
+  -webkit-box-shadow: inset 0 0 0 50px var(--light-10-inter) !important;
+  -webkit-text-fill-color: var(--light-0-inter) !important;
 }
